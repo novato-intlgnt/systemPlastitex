@@ -1,0 +1,42 @@
+# Entorno virtual
+.venv/
+
+# Archivos compilados de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+
+# Archivos temporales de ejecución
+*.log
+*.pot
+*.py[cod]
+*$py.class
+
+# Archivos de configuración sensibles
+.env
+.env.*
+*.sqlite3
+*.db
+
+# Carpetas de build, distribuciones, etc.
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Archivos de test y cobertura
+.coverage
+*.cover
+htmlcov/
+.tox/
+.pytest_cache/
+
+# Archivos de IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+*.env
