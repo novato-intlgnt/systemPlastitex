@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends
 
-from dev.controllers.users import UserController
+from src.dev.controllers.users import UserController
 
 # from dev.middlewares.auth import only_user
 # from dev.middlewares.user_handler import assign_role
-from dev.models.user import UserModel
+from src.dev.models.user import UserModel
 
 router = APIRouter(prefix="/user", tags=["User"])
 

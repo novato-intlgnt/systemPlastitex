@@ -4,7 +4,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from dev.routes.users import router
+from src.dev.routes.users import router
 
 
 def create_app(user_model):

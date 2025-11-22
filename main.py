@@ -1,5 +1,5 @@
-from app import create_app
-from dev.models.user import UserModel
+from src.app import create_app
+from src.dev.models.user import UserModel
 
 # Crear la app con dependencias inyectadas (como en JS)
 app = create_app(user_model=UserModel)
