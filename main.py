@@ -1,8 +1,8 @@
 from src.app import create_app
-from src.dev.models.user import UserModel
+from src.dev.repositories.user import UserRepositorie
 
 # Crear la app con dependencias inyectadas (como en JS)
-app = create_app(user_model=UserModel)
+app = create_app(user_model=UserRepositorie)
 
 # Si se ejecuta directamente
 if __name__ == "__main__":

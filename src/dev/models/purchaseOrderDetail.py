@@ -1,0 +1,13 @@
+from sqlalchemy import Column, ForeignKey, Integer, Numeric
+
+from src.dev.config.base import Base
+
+
+class PurchaseOrderDetail(Base):
+    __tablename__ = "purchase_order_detail"
+
+    id = Column(Integer, primary_key=True)
+    order_id = Column(Integer, ForeignKey("purchase_order.id"), nullable=False)
+    product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
+    quantity = Column(Integer, nullable=False)
+    unit_price = Column(Numeric(10, 2), nullable=False)

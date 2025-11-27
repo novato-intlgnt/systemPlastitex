@@ -1,0 +1,14 @@
+from sqlalchemy import TIMESTAMP, Column, ForeignKey, Integer, Numeric, String
+
+from src.dev.config.base import Base
+
+
+class ExitNote(Base):
+    __tablename__ = "exit_note"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    customer_id = Column(Integer, ForeignKey("customers.id"), nullable=False)
+    date = Column(TIMESTAMP)
+    total = Column(Numeric(10, 2), nullable=False)
+    reference = Column(String(100))

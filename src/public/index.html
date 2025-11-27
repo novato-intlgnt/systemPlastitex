@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Plastitex - Sistema de Gestión</title>
     <link rel="stylesheet" href="/css/styles.css" />
+    <script src="/js/script.js" defer></script>
   </head>
   <body>
     <div class="container">
       <div class="left-panel">
         <div class="logo">
-          <img src="assets/images/logo.jpg" class="logo-img" alt="" />
+          <img src="/assets/images/logo.jpg" class="logo-img" alt="" />
         </div>
         <h1>PLASTITEX S.A.C.</h1>
         <p>
@@ -56,11 +57,11 @@
 
             <form onsubmit="handleLogin(event)">
               <div class="form-group">
-                <label for="login-email">Correo Electrónico</label>
+                <label for="login-user">Usuario</label>
                 <input
-                  type="email"
-                  id="login-email"
-                  placeholder="ejemplo@plastitex.com"
+                  type="text"
+                  id="login-user"
+                  placeholder="username"
                   required
                 />
               </div>
@@ -98,21 +99,21 @@
 
             <form onsubmit="handleRegister(event)">
               <div class="form-group">
-                <label for="register-name">Nombre Completo</label>
+                <label for="register-user">Usuario</label>
                 <input
                   type="text"
-                  id="register-name"
-                  placeholder="Juan Pérez"
+                  id="register-user"
+                  placeholder="Username"
                   required
                 />
               </div>
 
               <div class="form-group">
-                <label for="register-email">Correo Electrónico</label>
+                <label for="register-name">Nombre Completo</label>
                 <input
-                  type="email"
-                  id="register-email"
-                  placeholder="ejemplo@plastitex.com"
+                  type="text"
+                  id="register-name"
+                  placeholder="Juan Pérez"
                   required
                 />
               </div>
@@ -164,6 +165,5 @@
         </div>
       </div>
     </div>
-    <script src="js/script.js"></script>
   </body>
 </html>

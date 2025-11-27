@@ -12,20 +12,17 @@ function switchTab(tab) {
   hideAlert();
 }
 
-/* ----------------------------- LOGIN REAL ----------------------------- */
-
 async function handleLogin(event) {
   event.preventDefault();
 
-  const email = document.getElementById("login-email").value;
+  const user = document.getElementById("login-user").value;
   const password = document.getElementById("login-password").value;
 
-  if (!email || !password) {
+  if (!user || !password) {
     return showAlert("Completa todos los campos", "error");
   }
 
   const url = window.location.origin;
-  console.log(url)
 
   showAlert("Verificando credenciales...", "success");
 
@@ -33,11 +30,16 @@ async function handleLogin(event) {
     const res = await fetch(`${url}/user/signin`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: 'include',
       body: JSON.stringify({
-        email: email,
+        user: user,
         pass: password,
       }),
     });
+
+    if (res.redirected) {
+        window.location.href = res.url;
+    }
 
     const data = await res.json();
 
@@ -47,23 +49,17 @@ async function handleLogin(event) {
 
     showAlert("¡Acceso concedido! Redirigiendo...", "success");
 
-    if (data.redirect) {
-      setTimeout(() => {
-        window.location.href = data.redirect;
-      }, 1500);
-    }
+    console.log(res)
   } catch (err) {
     showAlert("Error de conexión con el servidor", "error");
   }
 }
 
-/* ---------------------------- REGISTER REAL --------------------------- */
-
 async function handleRegister(event) {
   event.preventDefault();
 
-  const name = document.getElementById("register-name").value;
-  const email = document.getElementById("register-email").value;
+  const user = document.getElementById("register-user").value;
+  const fullName = document.getElementById("register-name").value;
   const role = document.getElementById("register-role").value;
   const password = document.getElementById("register-password").value;
   const confirm = document.getElementById("register-confirm").value;
@@ -76,21 +72,25 @@ async function handleRegister(event) {
   }
 
   const url = window.location.origin;
-  console.log(url)
 
   showAlert("Registrando usuario...", "success");
 
   try {
-    const res = await fetch(`${url}/user/signup/`, {
+    const res = await fetch(`${url}/user/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        user: name,
-        email: email,
+        user: user,
+        name: fullName,
         pass: password,
         role: role,
       }),
     });
+
+    if (res.redirected) {
+      window.location.href = res.url; // Navegación REAL
+      return;
+    }
 
     const data = await res.json();
 
@@ -109,8 +109,6 @@ async function handleRegister(event) {
   }
 }
 
-
-/* -------------------------- UTILIDADES ---------------------------- */
 
 function togglePassword(inputId) {
   const input = document.getElementById(inputId);
