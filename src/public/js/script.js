@@ -41,12 +41,12 @@ async function handleLogin(event) {
         window.location.href = res.url;
     }
 
-    const data = await res.json();
 
     if (!res.ok) {
       return showAlert(data.message || "Error al iniciar sesión", "error");
     }
 
+    const data = await res.json();
     showAlert("¡Acceso concedido! Redirigiendo...", "success");
 
     console.log(res)

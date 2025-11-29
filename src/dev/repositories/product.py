@@ -8,7 +8,7 @@ from src.dev.models.user import User
 from src.dev.utils.security import decode, getPassHashed, sign, verifyPassHashed
 
 
-class UserRepositorie:
+class ProductRepositorie:
     @staticmethod
     async def check(
         input_data: dict, poolDB: async_sessionmaker[AsyncSession] = async_session_maker

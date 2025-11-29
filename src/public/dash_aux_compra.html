@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Dashboard</title>
+    <link rel="shortcut icon" href="/assets/icons/favicon.ico" />
+    <link rel="stylesheet" href="/css/dashboard.css" />
+    <!-- Boxicons CDN Link -->
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css'>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-solid-rounded/css/uicons-solid-rounded.css'>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="/js/dashboard.js" defer></script>
+  </head>
+  <body>
+    <div class="sidebar">
+      <div class="logo-details">
+        <img src="/assets/images/logo.jpg" class="logo"></img>
+        <div class="logo_name">PlastiTex</div>
+        <i class="fi fi-rr-menu-burger" id="btn"></i>
+      </div>
+      <ul class="nav-list">
+        <li>
+          <a id="btn-library" href="#">
+            <i class="fi fi-rr-books-medical"></i>
+            <span class="links_name">Lyric Library</span>
+          </a>
+          <span class="tooltip">Lyric Library</span>
+        </li>
+        <li>
+          <a href="#explorer-section">
+            <i class="fi fi-rr-site-alt"></i>
+            <span class="links_name">Lyric Explorer</span>
+          </a>
+          <span class="tooltip">Lyric Explorer</span>
+        </li>
+        <li>
+          <a href="#about-section">
+            <i class="fi fi-rr-info"></i>
+            <span class="links_name">About us</span>
+          </a>
+          <span class="tooltip">About us</span>
+        </li>
+        <li class="profile">
+          <div class="profile-details">
+            <img src="profile.jpg" alt="profileImg" />
+            <div class="name_job">
+              <div id="user" class="name"> a</div>
+            </div>
+          </div>
+          <i class="fi fi-rr-sign-out-alt" id="log_out"></i>
+        </li>
+      </ul>
+    </div>
+    <!-- Library section-->
+    <section id="library-section" class="home-section">
+    </section>
+    <!-- Explorer section-->
+    <section id="explorer-section" class="home-section">
+    </section>
+    <!-- About us section-->
+    <section id="about-section" class="home-section">
+    </section>
+
+    <script src="/js/dashboard/library-utils.js" ></script>
+  </body>
+</html>

@@ -13,13 +13,13 @@ print(BASE_DIR)
 templates = Jinja2Templates(directory=BASE_DIR / "views")
 
 
-class UserController:
-    def __init__(self, user_model):
-        self.user_model = user_model
+class ProductsController:
+    def __init__(self, product_model):
+        self.product_model = product_model
 
     async def create(self, data: dict):
         try:
-            is_user_exist = await self.user_model.check(data)
+            is_user_exist = await self.product_model.check(data)
             if is_user_exist is True:
                 return JSONResponse(
                     status_code=status.HTTP_400_BAD_REQUEST,
@@ -30,7 +30,7 @@ class UserController:
                 )
 
             # Enviar correo de verificación
-            new_user = await self.user_model.create_worker(data)
+            new_user = await self.product_model.create_worker(data)
             if new_user:
                 return JSONResponse(
                     status_code=status.HTTP_201_CREATED,
@@ -53,7 +53,7 @@ class UserController:
 
     async def auth(self, data: dict):
         try:
-            auth_user = await self.user_model.auth(data)
+            auth_user = await self.product_model.auth(data)
             if auth_user["status"] is False:
                 return JSONResponse(
                     status_code=status.HTTP_400_BAD_REQUEST,
