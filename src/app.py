@@ -7,7 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from scalar_fastapi import Layout, get_scalar_api_reference
 
 from src.dev.routes.users import userRouter
-
+from src.dev.routes.reports import reportRouter
 
 def create_app(user_model):
     app = FastAPI(title="Plastitex Dashboard", docs_url="/docs")
@@ -65,5 +65,6 @@ def create_app(user_model):
         return FileResponse(os.path.join(PUBLIC_DIR, "login.html"))
 
     app.include_router(userRouter)
+    app.include_router(reportRouter)
 
     return app
