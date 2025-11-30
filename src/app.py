@@ -7,6 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from scalar_fastapi import Layout, get_scalar_api_reference
 
 from src.dev.routes.users import userRouter
+from src.dev.routes.purchase_orders import router as purchase_orders_router
 
 
 def create_app(user_model):
@@ -65,5 +66,6 @@ def create_app(user_model):
         return FileResponse(os.path.join(PUBLIC_DIR, "login.html"))
 
     app.include_router(userRouter)
+    app.include_router(purchase_orders_router)
 
     return app
