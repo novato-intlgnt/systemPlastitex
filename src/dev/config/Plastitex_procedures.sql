@@ -1,9 +1,4 @@
 -- ==========================
--- STORED PROCEDURES PARA REPORTES
--- Sistema Plastitex
--- ==========================
-
--- ==========================
 -- R1. KARDEX FÍSICO
 -- Combina movimientos de entrada (positivo) y salida (negativo)
 -- ==========================

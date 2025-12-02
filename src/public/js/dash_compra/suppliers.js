@@ -11,8 +11,8 @@ new TableModule({
   columns: [
     { title: "ID", field: "id", width: 70 },
     { title: "Nombre", field: "name" },
-    { title: "Telefono", field: "phone" },
-    { title: "Dirección", field: "address", hozAlign: "right" },
+    { title: "Dirección", field: "address" },
+    { title: "Telefono", field: "phone", hozAlign: "right" },
   ],
 
   mapResponse: (r) => r.suppliers,
