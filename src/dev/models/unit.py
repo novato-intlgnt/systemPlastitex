@@ -1,4 +1,5 @@
 from sqlalchemy import Boolean, Column, DateTime, Integer, String
+from sqlalchemy.orm import relationship
 
 from src.dev.config.base import Base
 
@@ -10,3 +11,6 @@ class Unit(Base):
     name = Column(String(50), unique=True, nullable=False)
     is_active = Column(Boolean, default=True)
     deleted_at = Column(DateTime, nullable=True)
+
+    # Relaciones
+    products = relationship("Product", back_populates="unit")

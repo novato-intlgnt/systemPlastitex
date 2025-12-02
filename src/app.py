@@ -14,6 +14,7 @@ from src.dev.routes.reports import reportRouter
 from src.dev.routes.suppliers import supplierRouter
 from src.dev.routes.units import unitRouter
 from src.dev.routes.users import userRouter
+from src.dev.routes.warehouse import warehouseRouter
 
 
 def create_app():
@@ -79,5 +80,6 @@ def create_app():
     app.include_router(reportRouter)
     app.include_router(purchase_orders_router)
     app.include_router(client_router)
+    app.include_router(warehouseRouter)
 
     return app

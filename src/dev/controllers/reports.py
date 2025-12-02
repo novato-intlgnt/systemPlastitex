@@ -212,3 +212,180 @@ class ReportController:
             raise HTTPException(
                 status_code=500, detail="Error al obtener los productos bajo stock."
             )
+
+    # ==========================================================================
+    # NUEVOS MÉTODOS PARA REPORTES EXTENDIDOS
+    # ==========================================================================
+
+    async def get_low_stock_aux_compra(
+        self,
+        current_role: str,
+        threshold: int = 10,
+    ):
+        """
+        Productos Bajo Stock para Aux Compra - Con query dinámica.
+        
+        Roles permitidos: aux_compra, admin
+
+        Args:
+            current_role: Rol del usuario autenticado.
+            threshold: Umbral mínimo de stock (default: 10).
+
+        Returns:
+            JSONResponse con productos donde stock < threshold.
+        """
+        self._check_role(current_role, ["aux_compra", "admin"])
+
+        try:
+            data = await self.report_repositorie.get_low_stock_dynamic(threshold)
+            return JSONResponse(
+                status_code=200,
+                content={
+                    "status": "success",
+                    "data": data,
+                    "count": len(data),
+                    "threshold": threshold,
+                },
+            )
+        except Exception as e:
+            print("Error in get_low_stock_aux_compra:", e)
+            raise HTTPException(
+                status_code=500, 
+                detail="Error al obtener productos con bajo stock."
+            )
+
+    async def get_purchase_history_filtered(
+        self,
+        current_role: str,
+        supplier_id: Optional[int] = None,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
+    ):
+        """
+        Historial de Compras con filtros opcionales para Aux Compra.
+        
+        Roles permitidos: aux_compra, admin
+
+        Args:
+            current_role: Rol del usuario autenticado.
+            supplier_id: ID del proveedor (opcional).
+            start_date: Fecha de inicio (opcional).
+            end_date: Fecha de fin (opcional).
+
+        Returns:
+            JSONResponse con el historial filtrado.
+        """
+        self._check_role(current_role, ["aux_compra", "admin"])
+
+        try:
+            data = await self.report_repositorie.get_purchase_history_dynamic(
+                supplier_id, start_date, end_date
+            )
+            return JSONResponse(
+                status_code=200,
+                content={
+                    "status": "success",
+                    "data": data,
+                    "count": len(data),
+                    "filters": {
+                        "supplier_id": supplier_id,
+                        "start_date": start_date,
+                        "end_date": end_date,
+                    },
+                },
+            )
+        except Exception as e:
+            print("Error in get_purchase_history_filtered:", e)
+            raise HTTPException(
+                status_code=500, 
+                detail="Error al obtener el historial de compras."
+            )
+
+    async def get_stock_aux_almacen(
+        self,
+        current_role: str,
+        product_id: Optional[int] = None,
+    ):
+        """
+        Stock para Aux Almacén - Con filtro opcional por producto.
+        
+        Roles permitidos: aux_almacen, admin
+
+        Args:
+            current_role: Rol del usuario autenticado.
+            product_id: ID del producto (opcional, None para todos).
+
+        Returns:
+            JSONResponse con información de stock detallada.
+        """
+        self._check_role(current_role, ["aux_almacen", "admin"])
+
+        try:
+            data = await self.report_repositorie.get_stock_by_product(product_id)
+            return JSONResponse(
+                status_code=200,
+                content={
+                    "status": "success",
+                    "data": data,
+                    "count": len(data),
+                },
+            )
+        except Exception as e:
+            print("Error in get_stock_aux_almacen:", e)
+            raise HTTPException(
+                status_code=500, 
+                detail="Error al obtener información de stock."
+            )
+
+    async def get_kardex_by_product(
+        self,
+        current_role: str,
+        product_id: int,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
+    ):
+        """
+        Kardex por Producto para Aux Almacén.
+        
+        Roles permitidos: aux_almacen, admin
+
+        Args:
+            current_role: Rol del usuario autenticado.
+            product_id: ID del producto (requerido).
+            start_date: Fecha de inicio (opcional).
+            end_date: Fecha de fin (opcional).
+
+        Returns:
+            JSONResponse con los movimientos del kardex.
+        """
+        self._check_role(current_role, ["aux_almacen", "admin"])
+
+        if not product_id:
+            raise HTTPException(
+                status_code=400, 
+                detail="El product_id es requerido."
+            )
+
+        try:
+            data = await self.report_repositorie.get_kardex_by_product(
+                product_id, start_date, end_date
+            )
+            return JSONResponse(
+                status_code=200,
+                content={
+                    "status": "success",
+                    "data": data,
+                    "count": len(data),
+                    "product_id": product_id,
+                    "filters": {
+                        "start_date": start_date,
+                        "end_date": end_date,
+                    },
+                },
+            )
+        except Exception as e:
+            print("Error in get_kardex_by_product:", e)
+            raise HTTPException(
+                status_code=500, 
+                detail="Error al obtener el kardex del producto."
+            )

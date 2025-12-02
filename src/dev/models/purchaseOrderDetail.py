@@ -15,6 +15,6 @@ class PurchaseOrderDetail(Base):
     is_active = Column(Boolean, default=True)
     deleted_at = Column(DateTime, nullable=True)
 
-    # relaciones
+    # Relaciones
     order = relationship("PurchaseOrder", back_populates="details")
-    product = relationship("Product")
+    product = relationship("Product", back_populates="purchase_order_details")

@@ -26,6 +26,10 @@ async def get_current_role(user: dict = Depends(only_user)) -> str:
     return user.get("role", "")
 
 
+# ==============================================================================
+# REPORTES EXISTENTES
+# ==============================================================================
+
 @reportRouter.get(
     "/kardex",
     summary="R1. Kardex Físico - Movimientos de entrada y salida de un producto",
@@ -126,3 +130,169 @@ async def get_low_stock(
     **Roles permitidos**: aux_compra, admin
     """
     return await report_controller.get_low_stock(user_role, threshold)
+
+
+# ==============================================================================
+# REPORTES PARA AUXILIAR DE COMPRA (aux_compra)
+# ==============================================================================
+
+@reportRouter.get(
+    "/aux-compra/low-stock",
+    summary="Productos con bajo stock para Aux Compra",
+    tags=["Reports - Aux Compra"],
+)
+async def get_low_stock_aux_compra(
+    threshold: int = Query(10, description="Umbral mínimo de stock (default: 10)"),
+    user_role: str = Depends(get_current_role),
+):
+    """
+    Lista productos donde `stock < threshold`.
+    
+    Ideal para identificar productos que necesitan reabastecimiento.
+
+    - **threshold**: Umbral mínimo de stock. Productos con stock menor a este valor serán listados.
+
+    **Roles permitidos**: aux_compra, admin
+    
+    **Returns:**
+    - Lista de productos con bajo stock incluyendo:
+      - product_id, product_name
+      - category_name, unit_name
+      - current_stock, threshold, deficit
+      - purchase_price
+    """
+    return await report_controller.get_low_stock_aux_compra(user_role, threshold)
+
+
+@reportRouter.get(
+    "/aux-compra/purchase-history",
+    summary="Historial de compras con filtros opcionales",
+    tags=["Reports - Aux Compra"],
+)
+async def get_purchase_history_filtered(
+    supplier_id: Optional[int] = Query(None, description="ID del proveedor (opcional)"),
+    start_date: Optional[str] = Query(None, description="Fecha inicio YYYY-MM-DD (opcional)"),
+    end_date: Optional[str] = Query(None, description="Fecha fin YYYY-MM-DD (opcional)"),
+    user_role: str = Depends(get_current_role),
+):
+    """
+    Obtiene el historial de compras con filtros opcionales.
+    
+    Todos los parámetros son opcionales. Si no se especifican, retorna todas las compras.
+
+    - **supplier_id**: ID del proveedor (opcional - si no se especifica, retorna todos).
+    - **start_date**: Fecha de inicio (opcional, formato: YYYY-MM-DD).
+    - **end_date**: Fecha de fin (opcional, formato: YYYY-MM-DD).
+
+    **Roles permitidos**: aux_compra, admin
+    
+    **Returns:**
+    - Lista de órdenes de compra con:
+      - order_id, order_date
+      - supplier_id, supplier_name
+      - total, status
+      - created_by
+    """
+    return await report_controller.get_purchase_history_filtered(
+        user_role, supplier_id, start_date, end_date
+    )
+
+
+# ==============================================================================
+# REPORTES PARA AUXILIAR DE ALMACÉN (aux_almacen)
+# ==============================================================================
+
+@reportRouter.get(
+    "/aux-almacen/stock",
+    summary="Stock de productos para Aux Almacén",
+    tags=["Reports - Aux Almacén"],
+)
+async def get_stock_aux_almacen(
+    product_id: Optional[int] = Query(None, description="ID del producto (opcional)"),
+    user_role: str = Depends(get_current_role),
+):
+    """
+    Obtiene información detallada de stock.
+    
+    Si se proporciona product_id, retorna solo ese producto.
+    Si no se proporciona, retorna todos los productos.
+
+    - **product_id**: ID del producto (opcional - si no se especifica, retorna todos).
+
+    **Roles permitidos**: aux_almacen, admin
+    
+    **Returns:**
+    - Lista de productos con:
+      - product_id, product_name
+      - category_id, category_name
+      - unit_id, unit_name
+      - stock, sale_price, purchase_price
+      - total_entries (total de entradas)
+      - total_exits (total de salidas)
+    """
+    return await report_controller.get_stock_aux_almacen(user_role, product_id)
+
+
+@reportRouter.get(
+    "/aux-almacen/stock/{product_id}",
+    summary="Stock de un producto específico",
+    tags=["Reports - Aux Almacén"],
+)
+async def get_stock_by_product_id(
+    product_id: int,
+    user_role: str = Depends(get_current_role),
+):
+    """
+    Obtiene información detallada de stock de un producto específico.
+
+    - **product_id**: ID del producto a consultar.
+
+    **Roles permitidos**: aux_almacen, admin
+    
+    **Returns:**
+    - Información del producto con:
+      - product_id, product_name
+      - category_id, category_name
+      - unit_id, unit_name
+      - stock, sale_price, purchase_price
+      - total_entries (total de entradas)
+      - total_exits (total de salidas)
+    """
+    return await report_controller.get_stock_aux_almacen(user_role, product_id)
+
+
+@reportRouter.get(
+    "/aux-almacen/kardex/{product_id}",
+    summary="Kardex de un producto específico",
+    tags=["Reports - Aux Almacén"],
+)
+async def get_kardex_by_product(
+    product_id: int,
+    start_date: Optional[str] = Query(None, description="Fecha inicio YYYY-MM-DD (opcional)"),
+    end_date: Optional[str] = Query(None, description="Fecha fin YYYY-MM-DD (opcional)"),
+    user_role: str = Depends(get_current_role),
+):
+    """
+    Obtiene el kardex (movimientos de entrada y salida) de un producto específico.
+    
+    El product_id es obligatorio. Las fechas son opcionales.
+
+    - **product_id**: ID del producto a consultar (REQUERIDO).
+    - **start_date**: Fecha de inicio (opcional, formato: YYYY-MM-DD).
+    - **end_date**: Fecha de fin (opcional, formato: YYYY-MM-DD).
+
+    **Roles permitidos**: aux_almacen, admin
+    
+    **Returns:**
+    - Lista de movimientos con:
+      - movement_date
+      - movement_type (ENTRADA/SALIDA)
+      - reference
+      - quantity
+      - balance (positivo para entradas, negativo para salidas)
+      - supplier_customer_name
+      - entity_type (Proveedor/Cliente)
+    """
+    return await report_controller.get_kardex_by_product(
+        user_role, product_id, start_date, end_date
+    )

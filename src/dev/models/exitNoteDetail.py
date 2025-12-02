@@ -1,4 +1,5 @@
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer
+from sqlalchemy.orm import relationship
 
 from src.dev.config.base import Base
 
@@ -12,3 +13,7 @@ class ExitNoteDetail(Base):
     quantity = Column(Integer, nullable=False)
     is_active = Column(Boolean, default=True)
     deleted_at = Column(DateTime, nullable=True)
+
+    # Relaciones
+    exit_note = relationship("ExitNote", back_populates="details")
+    product = relationship("Product", back_populates="exit_note_details")

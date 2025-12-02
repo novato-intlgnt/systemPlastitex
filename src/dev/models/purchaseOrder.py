@@ -25,6 +25,7 @@ class PurchaseOrder(Base):
     is_active = Column(Boolean, default=True)
     deleted_at = Column(DateTime, nullable=True)
 
-    # relaciones
-    supplier = relationship("Supplier", foreign_keys=[supplier_id])
-    details = relationship("PurchaseOrderDetail", back_populates="order")
+    # Relaciones
+    user = relationship("User", back_populates="purchase_orders")
+    supplier = relationship("Supplier", back_populates="purchase_orders")
+    details = relationship("PurchaseOrderDetail", back_populates="order", cascade="all, delete-orphan")

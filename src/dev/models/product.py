@@ -1,4 +1,5 @@
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, Numeric, String
+from sqlalchemy.orm import relationship
 
 from src.dev.config.base import Base
 
@@ -17,3 +18,10 @@ class Product(Base):
     purchase_price = Column(Numeric(10, 2), default=0)
     is_active = Column(Boolean, default=True)
     deleted_at = Column(DateTime, nullable=True)
+
+    # Relaciones
+    category = relationship("Category", back_populates="products")
+    unit = relationship("Unit", back_populates="products")
+    entry_note_details = relationship("EntryNoteDetail", back_populates="product")
+    exit_note_details = relationship("ExitNoteDetail", back_populates="product")
+    purchase_order_details = relationship("PurchaseOrderDetail", back_populates="product")

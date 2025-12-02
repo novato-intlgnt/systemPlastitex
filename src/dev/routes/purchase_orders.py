@@ -52,7 +52,7 @@ async def get_purchase_order_by_id(
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_purchase_order(
     data: dict,
-    user: dict = Depends(require_role("admin", "auxiliar_compra"))
+    user: dict = Depends(require_role("admin", "aux_compra"))
 ):
     """Crear una nueva orden de compra"""
     try:
@@ -86,7 +86,7 @@ async def create_purchase_order(
 async def update_purchase_order(
     order_id: int,
     data: dict,
-    user: dict = Depends(require_role("admin", "auxiliar_compra"))
+    user: dict = Depends(require_role("admin", "aux_compra"))
 ):
     """Actualizar una orden de compra"""
     try:
@@ -121,7 +121,7 @@ async def update_purchase_order(
 @router.delete("/{order_id}")
 async def delete_purchase_order(
     order_id: int,
-    user: dict = Depends(require_role("admin", "auxiliar_compra"))
+    user: dict = Depends(require_role("admin", "aux_compra"))
 ):
     """Eliminar una orden de compra"""
     try:
@@ -142,4 +142,58 @@ async def delete_purchase_order(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error al eliminar orden de compra: {str(e)}"
+        )
+
+
+@router.post("/{order_id}/recalculate", status_code=status.HTTP_200_OK)
+async def recalculate_purchase_order_total(
+    order_id: int,
+    user: dict = Depends(require_role("admin", "aux_compra"))
+):
+    """
+    Recalcular el total de una orden de compra.
+    
+    Recalcula el total basándose en la suma de (quantity * unit_price) 
+    de todos los detalles activos de la orden.
+    
+    **Roles permitidos:** admin, aux_compra
+    
+    **Path Parameters:**
+    - **order_id**: ID de la orden de compra a recalcular
+    
+    **Returns:**
+    - **success**: true si se recalculó correctamente
+    - **new_total**: Nuevo total calculado
+    - **order_id**: ID de la orden
+    - **details_count**: Cantidad de detalles incluidos en el cálculo
+    - **message**: Mensaje descriptivo
+    
+    **Errores:**
+    - **404**: Orden de compra no encontrada o inactiva
+    """
+    try:
+        result = await PurchaseOrderRepository.recalculate_total(order_id)
+        
+        if not result.get("success"):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=result.get("message", "Orden de compra no encontrada")
+            )
+        
+        return {
+            "status": "success",
+            "message": result.get("message"),
+            "data": {
+                "order_id": result.get("order_id"),
+                "new_total": result.get("new_total"),
+                "details_count": result.get("details_count"),
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error al recalcular el total: {str(e)}"
         )

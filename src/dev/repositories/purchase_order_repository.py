@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 from src.dev.models.purchaseOrder import PurchaseOrder
@@ -160,6 +160,89 @@ class PurchaseOrderRepository:
                 await session.delete(order)
                 await session.commit()
                 return True
+            except Exception as e:
+                await session.rollback()
+                raise e
+
+    @staticmethod
+    async def recalculate_total(order_id: int):
+        """
+        Recalcula el total de una orden de compra basándose en sus detalles.
+        total = SUM(quantity * unit_price) de todos los detalles activos.
+        
+        Args:
+            order_id: ID de la orden de compra a recalcular.
+            
+        Returns:
+            Diccionario con el nuevo total y estado de la operación.
+        """
+        async with async_session_maker() as session:
+            try:
+                # Verificar que la orden exista
+                query = select(PurchaseOrder).where(
+                    PurchaseOrder.id == order_id,
+                    PurchaseOrder.is_active == True
+                ).options(joinedload(PurchaseOrder.details))
+                
+                result = await session.execute(query)
+                order = result.unique().scalars().first()
+                
+                if not order:
+                    return {
+                        "success": False,
+                        "new_total": 0,
+                        "message": "Orden de compra no encontrada o inactiva"
+                    }
+                
+                # Calcular el nuevo total
+                new_total = sum(
+                    detail.quantity * float(detail.unit_price)
+                    for detail in order.details
+                    if detail.is_active
+                )
+                
+                # Actualizar el total
+                order.total = new_total
+                await session.commit()
+                await session.refresh(order)
+                
+                return {
+                    "success": True,
+                    "new_total": float(order.total),
+                    "order_id": order.id,
+                    "details_count": len([d for d in order.details if d.is_active]),
+                    "message": f"Total actualizado correctamente a {new_total}"
+                }
+                
+            except Exception as e:
+                await session.rollback()
+                raise e
+
+    @staticmethod
+    async def recalculate_total_sp(order_id: int):
+        """
+        Recalcula el total invocando el Procedimiento Almacenado SP_RECALCULATE_PO_TOTAL.
+        
+        Args:
+            order_id: ID de la orden de compra a recalcular.
+            
+        Returns:
+            Resultado del SP.
+        """
+        async with async_session_maker() as session:
+            try:
+                sql = text("CALL SP_RECALCULATE_PO_TOTAL(:order_id)")
+                result = await session.execute(sql, {"order_id": order_id})
+                row = result.fetchone()
+                
+                if row:
+                    columns = result.keys()
+                    return dict(zip(columns, row))
+                
+                return {
+                    "success": False,
+                    "message": "Error al ejecutar el procedimiento almacenado"
+                }
             except Exception as e:
                 await session.rollback()
                 raise e

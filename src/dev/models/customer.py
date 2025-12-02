@@ -1,4 +1,5 @@
 from sqlalchemy import Boolean, Column, DateTime, Integer, String
+from sqlalchemy.orm import relationship
 
 from src.dev.config.base import Base
 
@@ -12,3 +13,6 @@ class Customer(Base):
     address = Column(String(200))
     is_active = Column(Boolean, default=True)
     deleted_at = Column(DateTime, nullable=True)
+
+    # Relaciones
+    exit_notes = relationship("ExitNote", back_populates="customer")
