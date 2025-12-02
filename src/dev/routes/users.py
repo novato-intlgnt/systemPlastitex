@@ -1,25 +1,25 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends
 from fastapi.responses import HTMLResponse
 
 from src.dev.controllers.users import UserController
 from src.dev.middlewares.auth import only_user
-from src.dev.repositories.user import UserRepositorie
+from src.dev.repositories.user import UserRepository
 
 userRouter = APIRouter(prefix="/user", tags=["User"])
 
 # Inyección de dependencias
-user_model = UserRepositorie()
+user_model = UserRepository()
 user_controller = UserController(user_model)
 
 
 # Rutas equivalentes
 @userRouter.post("/signup", summary="Register an user")
-async def stall_signup(data: dict):
+async def user_signup(data: dict):
     return await user_controller.create(data)
 
 
 @userRouter.post("/signin", summary="Enter to user's account")
-async def stall_signin(data: dict):
+async def user_signin(data: dict):
     return await user_controller.auth(data)
 
 
@@ -28,5 +28,5 @@ async def stall_signin(data: dict):
     summary="Show the user's dashboard",
     response_class=HTMLResponse,
 )
-async def access_dashboard(name: str, request: Request, user=Depends(only_user)):
-    return await user_controller.access(name, user, request)
+async def access_dashboard(name: str, user=Depends(only_user)):
+    return await user_controller.access(name, user)

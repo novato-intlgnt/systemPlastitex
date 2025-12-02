@@ -1,74 +1,177 @@
+from datetime import datetime
+
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from src.dev.config.db import async_session_maker
-from src.dev.models.user import User
-from src.dev.utils.security import decode, getPassHashed, sign, verifyPassHashed
+from src.dev.models.category import Category
+from src.dev.models.product import Product
+from src.dev.models.unit import Unit
 
 
-class ProductRepositorie:
+class ProductRepository:
+
+    # CHECK: Verifica si el producto existe (nombre y categoría)
     @staticmethod
     async def check(
-        input_data: dict, poolDB: async_sessionmaker[AsyncSession] = async_session_maker
+        data: dict, poolDB: async_sessionmaker[AsyncSession] = async_session_maker
     ):
-        user = input_data["user"]
-        rol = input_data["role"]
+        name = data["name"]
+        category_id = data["category_id"]
+
         async with poolDB() as session:
-            query = select(User).where((User.username == user) & (User.role == rol))
+            query = select(Product).where(
+                (Product.name == name) & (Product.category_id == category_id)
+            )
             result = await session.execute(query)
-        user = result.first()
-        return user is not None
 
+        product = result.first()
+        return product is not None
+
+    # GET ALL: Lista de productos con joins (nombre categoría/unidad)
     @staticmethod
-    async def create_worker(
-        input_data: dict, poolDB: async_sessionmaker[AsyncSession] = async_session_maker
-    ):
-        user = input_data["user"]
-        name = input_data["name"]
-        role = input_data["role"]
-        password = getPassHashed(input_data["pass"])
-
-        newUser = User(username=user, password=password, fullname=name, role=role)
+    async def get_all(poolDB: async_sessionmaker[AsyncSession] = async_session_maker):
         async with poolDB() as session:
-            try:
-                session.add(newUser)
+            query = (
+                select(Product, Category.name, Unit.name)
+                .join(Category, Product.category_id == Category.id)
+                .join(Unit, Product.unit_id == Unit.id)
+                .where(Product.is_active == True)
+            )
+
+            result = await session.execute(query)
+
+        products = result.all()
+        products_list = []
+
+        for product, category_name, unit_name in products:
+            products_list.append(
+                {
+                    "id": product.id,
+                    "name": product.name,
+                    "category": category_name,
+                    "unit": unit_name,
+                    "stock": product.stock,
+                    "sale_price": float(product.sale_price),
+                    "purchase_price": float(product.purchase_price),
+                }
+            )
+
+        return products_list
+
+    # GET BY ID
+    @staticmethod
+    async def get_byId(
+        prod_id: int, poolDB: async_sessionmaker[AsyncSession] = async_session_maker
+    ):
+        async with poolDB() as session:
+
+            query = (
+                select(Product, Category.name, Unit.name)
+                .join(Category, Product.category_id == Category.id)
+                .join(Unit, Product.unit_id == Unit.id)
+                .where(Product.id == prod_id)
+            )
+
+            result = await session.execute(query)
+
+        row = result.first()
+        if not row:
+            raise HTTPException(404, "Producto no encontrado")
+
+        product, category_name, unit_name = row
+
+        return {
+            "id": product.id,
+            "name": product.name,
+            "category": category_name,
+            "unit": unit_name,
+            "stock": product.stock,
+            "sale_price": float(product.sale_price),
+            "purchase_price": float(product.purchase_price),
+        }
+
+    # CREATE: Crear producto
+    @staticmethod
+    async def create(
+        product_data: dict,
+        poolDB: async_sessionmaker[AsyncSession] = async_session_maker,
+    ):
+        try:
+            new_product = Product(
+                name=product_data["name"],
+                category_id=product_data["category_id"],
+                unit_id=product_data["unit_id"],
+                stock=product_data.get("stock", 0),
+                sale_price=product_data.get("sale_price", 0),
+                purchase_price=product_data.get("purchase_price", 0),
+            )
+
+            async with poolDB() as session:
+                session.add(new_product)
                 await session.commit()
-                await session.refresh(newUser)
+                await session.refresh(new_product)
+
                 return {"status": True}
 
-            except IntegrityError:
-                await session.rollback()
-                raise HTTPException(400, "El usuario ya existe")
+        except IntegrityError:
+            raise HTTPException(400, "El producto ya existe")
+
+        except SQLAlchemyError:
+            raise HTTPException(500, "Error en la base de datos")
+
+    # MODIFY: Modificar producto
+    @staticmethod
+    async def modify(
+        prod_id: int,
+        new_data: dict,
+        poolDB: async_sessionmaker[AsyncSession] = async_session_maker,
+    ):
+        async with poolDB() as session:
+            try:
+                product = await session.get(Product, prod_id)
+
+                if not product:
+                    raise HTTPException(404, "El producto no existe")
+
+                for key, value in new_data.items():
+                    if hasattr(product, key):
+                        setattr(product, key, value)
+
+                await session.commit()
+                await session.refresh(product)
+
+                return {"status": True}
 
             except SQLAlchemyError:
                 await session.rollback()
                 raise HTTPException(500, "Error en la base de datos")
 
+    # DELETE: Soft delete
+
     @staticmethod
-    async def auth(
-        input_data: dict, poolDB: async_sessionmaker[AsyncSession] = async_session_maker
+    async def delete(
+        prod_id: int, poolDB: async_sessionmaker[AsyncSession] = async_session_maker
     ):
-        username = input_data["user"]
-        password = input_data["pass"]
-
         async with poolDB() as session:
-            query = select(User.password, User.role, User.fullname).where(
-                User.username == username
-            )
-            result = await session.execute(query)
-        user = result.first()
-        passHashed = user.password
-        roleUser = user.role
-        fullname = user.fullname
-        if verifyPassHashed(password, passHashed) is False:
-            return {
-                "status": False,
-            }
+            try:
+                product = await session.get(Product, prod_id)
 
-        print(input_data)
-        token = sign({"user": username, "role": roleUser, "name": fullname})
-        print(token)
+                if not product:
+                    raise HTTPException(404, "Producto no encontrado")
 
-        return {"auth": token, "name": username, "status": True}
+                if not product.is_active:
+                    raise HTTPException(400, "El producto ya está eliminado")
+
+                product.is_active = False
+                product.deleted_at = datetime.utcnow()
+
+                await session.commit()
+
+                return {"status": True, "message": "Producto eliminado"}
+
+            except SQLAlchemyError:
+                await session.rollback()
+                raise HTTPException(500, "Error en la base de datos")

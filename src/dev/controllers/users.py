@@ -1,16 +1,10 @@
 import os
 import pathlib
-from typing import Optional
 
-from fastapi import HTTPException, Request, Response, status
+from fastapi import HTTPException, status
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
 
-# Ruta base del proyecto
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent.parent
-print(BASE_DIR)
-
-templates = Jinja2Templates(directory=BASE_DIR / "views")
 
 
 class UserController:
@@ -29,7 +23,6 @@ class UserController:
                     },
                 )
 
-            # Enviar correo de verificación
             new_user = await self.user_model.create_worker(data)
             if new_user:
                 return JSONResponse(
@@ -72,8 +65,8 @@ class UserController:
                 key="user",
                 value=auth_user["auth"],
                 httponly=True,
-                samesite="lax",
-                secure=False,
+                secure=True,
+                samesite="none",
                 path="/",
                 max_age=int(os.getenv("JWT_COOKIE_EXPIRATION", "3600")),
             )
@@ -83,18 +76,19 @@ class UserController:
             print("Error in auth:", e)
             raise HTTPException(status_code=500, detail="Internal server error")
 
-    # 🧩 ACCESS (dashboard by role)
-    async def access(self, name: str, user: dict, request: Request):
+    async def access(self, name: str, user: dict):
         try:
             if user.get("user") != name:
                 return RedirectResponse(url="/", status_code=302)
+            if user.get("role") == "aux_compra":
+                return FileResponse(
+                    path=BASE_DIR / "public" / "dash_aux_compra.html",
+                    media_type="text/html",
+                )
             return FileResponse(
-                path=BASE_DIR / "public" / "dash_aux_compra.html",
+                path=BASE_DIR / "public" / "dash_aux_almacen.html",
                 media_type="text/html",
             )
-            # return templates.TemplateResponse(
-            #     "dashboard.html", {"request": request}  # "user": user}
-            # )
         except Exception as e:
             print("Error accessing dashboard:", e)
             raise HTTPException(status_code=500, detail="Internal server error")

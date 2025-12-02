@@ -5,14 +5,16 @@
     <title>Dashboard</title>
     <link rel="shortcut icon" href="/assets/icons/favicon.ico" />
     <link rel="stylesheet" href="/css/dashboard.css" />
+    <link rel="stylesheet" href="/css/dash_almacen/products.css" />
     <!-- Boxicons CDN Link -->
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
-    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css'>
-    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-solid-rounded/css/uicons-solid-rounded.css'>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+    <link href="https://unpkg.com/tabulator-tables@6.2.5/dist/css/tabulator_midnight.min.css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/tabulator-tables@6.2.5/dist/js/tabulator.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
-    <script src="https://www.youtube.com/iframe_api"></script>
     <script src="/js/dashboard.js" defer></script>
+    <script type="module" src="/js/dash_almacen/products.js" defer></script>
   </head>
   <body>
     <div class="sidebar">
@@ -24,24 +26,45 @@
       <ul class="nav-list">
         <li>
           <a id="btn-library" href="#">
-            <i class="fi fi-rr-books-medical"></i>
-            <span class="links_name">Lyric Library</span>
+            <i class="fi fi-rr-customer-care"></i>
+            <span class="links_name">Clientes</span>
           </a>
-          <span class="tooltip">Lyric Library</span>
+          <span class="tooltip">Clientes</span>
         </li>
         <li>
-          <a href="#explorer-section">
-            <i class="fi fi-rr-site-alt"></i>
-            <span class="links_name">Lyric Explorer</span>
+          <a href="#products-section">
+            <i class="fi fi-rr-selling"></i>
+            <span class="links_name">Productos</span>
           </a>
-          <span class="tooltip">Lyric Explorer</span>
+          <span class="tooltip">Productos</span>
         </li>
         <li>
-          <a href="#about-section">
-            <i class="fi fi-rr-info"></i>
-            <span class="links_name">About us</span>
+          <a href="#entryNote-section">
+            <i class="fi fi-rr-wallet-income"></i>
+            <span class="links_name">Nota - Ingreso</span>
           </a>
-          <span class="tooltip">About us</span>
+          <span class="tooltip">Nota - Ingreso</span>
+        </li>
+        <li>
+          <a href="#stock-section">
+            <i class="fi fi-rr-warehouse-alt"></i>
+            <span class="links_name">Stock</span>
+          </a>
+          <span class="tooltip">Stock</span>
+        </li>
+        <li>
+          <a href="#kardex-section">
+            <i class="fi fi-rr-checklist-task-budget"></i>
+            <span class="links_name">Kardex</span>
+          </a>
+          <span class="tooltip">Kardex</span>
+        </li>
+        <li>
+          <a href="#exitNote-section">
+            <i class="fi fi-rr-airplay"></i>
+            <span class="links_name">Nota - Salida</span>
+          </a>
+          <span class="tooltip">Nota - Salida</span>
         </li>
         <li class="profile">
           <div class="profile-details">
@@ -55,14 +78,72 @@
       </ul>
     </div>
     <!-- Library section-->
-    <section id="library-section" class="home-section">
+    <section id="clients-section" class="home-section">
     </section>
-    <!-- Explorer section-->
-    <section id="explorer-section" class="home-section">
+    <!-- products section-->
+    <section id="products-section" class="home-section">
+      <div class="section-header">
+        <h2>Gestión de Productos</h2>
+        <button id="btn-add-product" class="btn-primary">+ Nuevo Producto</button>
+      </div>
+
+      <div class="search-box">
+        <input type="text" id="product-search" class="search-input" placeholder="Buscar producto..." />
+      </div>
+
+      <div id="products-table" class="data-table"></div>
+
+      <div id="product-modal" class="modal">
+        <div class="modal-content">
+          <h3 id="modal-title">Nuevo Producto</h3>
+
+          <form id="product-form">
+            <input type="hidden" id="product-id">
+
+            <div class="form-group">
+              <label>Nombre</label>
+              <input type="text" id="product-name" required>
+            </div>
+
+            <div class="form-group">
+              <label>Categoría</label>
+              <select id="product-category" required></select>
+            </div>
+
+            <div class="form-group">
+              <label>Unidad</label>
+              <select id="product-unit" required></select>
+            </div>
+
+            <div class="form-group">
+              <label>Stock</label>
+              <input type="number" id="product-stock" min="0" required>
+            </div>
+
+            <div class="form-group">
+              <label>Precio Venta</label>
+              <input type="number" step="0.01" id="product-sale" required>
+            </div>
+
+            <div class="form-group">
+              <label>Precio Compra</label>
+              <input type="number" step="0.01" id="product-purchase" required>
+            </div>
+
+            <div class="modal-actions">
+              <button type="button" id="btn-cancel" class="btn-secondary">Cancelar</button>
+              <button type="submit" class="btn-primary">Guardar</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </section>
-    <!-- About us section-->
-    <section id="about-section" class="home-section">
-    </section>
+
+
+    <section id="entryNote-section" class="home-section"></section>
+    <section id="stock-section" class="home-section"></section>
+    <section id="kardex-section" class="home-section"></section>
+    <section id="exitNote-section" class="home-section"></section>
 
     <script src="/js/dashboard/library-utils.js" ></script>
   </body>

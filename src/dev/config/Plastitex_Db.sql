@@ -16,26 +16,34 @@ CREATE TABLE users (
 
 CREATE TABLE categories (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100) UNIQUE NOT NULL
+    name VARCHAR(100) UNIQUE NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    deleted_at TIMESTAMP NULL
 );
 
 CREATE TABLE units (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(50) UNIQUE NOT NULL
+    name VARCHAR(50) UNIQUE NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    deleted_at TIMESTAMP NULL
 );
 
 CREATE TABLE suppliers (
     id SERIAL PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
     phone VARCHAR(20),
-    address VARCHAR(200)
+    address VARCHAR(200),
+    is_active BOOLEAN DEFAULT TRUE,
+    deleted_at TIMESTAMP NULL
 );
 
 CREATE TABLE customers (
     id SERIAL PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
     phone VARCHAR(20),
-    address VARCHAR(200)
+    address VARCHAR(200),
+    is_active BOOLEAN DEFAULT TRUE,
+    deleted_at TIMESTAMP NULL
 );
 
 -- ==========================
@@ -49,7 +57,9 @@ CREATE TABLE products (
     unit_id INTEGER NOT NULL,
     stock INTEGER DEFAULT 0,
     sale_price DECIMAL(10,2) DEFAULT 0,
-    purchase_price DECIMAL(10,2) DEFAULT 0
+    purchase_price DECIMAL(10,2) DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE,
+    deleted_at TIMESTAMP NULL
 );
 
 -- ==========================
@@ -62,7 +72,9 @@ CREATE TABLE purchase_order (
     supplier_id INTEGER NOT NULL,
     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     total DECIMAL(10,2) NOT NULL,
-    status VARCHAR(20) DEFAULT 'pending'
+    status VARCHAR(20) DEFAULT 'pending',
+    is_active BOOLEAN DEFAULT TRUE,
+    deleted_at TIMESTAMP NULL
 );
 
 CREATE TABLE purchase_order_detail (
@@ -70,7 +82,9 @@ CREATE TABLE purchase_order_detail (
     order_id INTEGER NOT NULL,
     product_id INTEGER NOT NULL,
     quantity INTEGER NOT NULL,
-    unit_price DECIMAL(10,2) NOT NULL
+    unit_price DECIMAL(10,2) NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    deleted_at TIMESTAMP NULL
 );
 
 -- ==========================
@@ -82,14 +96,18 @@ CREATE TABLE entry_note (
     user_id INTEGER NOT NULL,
     supplier_id INTEGER NOT NULL,
     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    reference VARCHAR(100)
+    reference VARCHAR(100),
+    is_active BOOLEAN DEFAULT TRUE,
+    deleted_at TIMESTAMP NULL
 );
 
 CREATE TABLE entry_note_detail (
     id SERIAL PRIMARY KEY,
     entry_id INTEGER NOT NULL,
     product_id INTEGER NOT NULL,
-    quantity INTEGER NOT NULL
+    quantity INTEGER NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    deleted_at TIMESTAMP NULL
 );
 
 -- ==========================
@@ -102,14 +120,18 @@ CREATE TABLE exit_note (
     customer_id INTEGER NOT NULL,
     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     total DECIMAL(10,2) NOT NULL,
-    reference VARCHAR(100)
+    reference VARCHAR(100),
+    is_active BOOLEAN DEFAULT TRUE,
+    deleted_at TIMESTAMP NULL
 );
 
 CREATE TABLE exit_note_detail (
     id SERIAL PRIMARY KEY,
     exit_id INTEGER NOT NULL,
     product_id INTEGER NOT NULL,
-    quantity INTEGER NOT NULL
+    quantity INTEGER NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    deleted_at TIMESTAMP NULL
 );
 
 -- ==========================

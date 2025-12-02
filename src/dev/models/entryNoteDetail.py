@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer
 
 from src.dev.config.base import Base
 
@@ -10,3 +10,5 @@ class EntryNoteDetail(Base):
     entry_id = Column(Integer, ForeignKey("entry_note.id"), nullable=False)
     product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
     quantity = Column(Integer, nullable=False)
+    is_active = Column(Boolean, default=True)
+    deleted_at = Column(DateTime, nullable=True)

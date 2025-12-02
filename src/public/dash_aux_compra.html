@@ -5,14 +5,16 @@
     <title>Dashboard</title>
     <link rel="shortcut icon" href="/assets/icons/favicon.ico" />
     <link rel="stylesheet" href="/css/dashboard.css" />
+    <link rel="stylesheet" href="/css/dash_almacen/products.css" />
     <!-- Boxicons CDN Link -->
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
-    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css'>
-    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-solid-rounded/css/uicons-solid-rounded.css'>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+    <link href="https://unpkg.com/tabulator-tables@6.2.5/dist/css/tabulator_midnight.min.css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/tabulator-tables@6.2.5/dist/js/tabulator.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
-    <script src="https://www.youtube.com/iframe_api"></script>
     <script src="/js/dashboard.js" defer></script>
+    <script type="module" src="/js/dash_compra/suppliers.js" defer></script>
   </head>
   <body>
     <div class="sidebar">
@@ -24,30 +26,38 @@
       <ul class="nav-list">
         <li>
           <a id="btn-library" href="#">
-            <i class="fi fi-rr-books-medical"></i>
-            <span class="links_name">Lyric Library</span>
+            <i class="fi fi-rr-supplier-alt"></i>
+            <span class="links_name">Proveedor</span>
           </a>
-          <span class="tooltip">Lyric Library</span>
+          <span class="tooltip">Proveedor</span>
         </li>
         <li>
-          <a href="#explorer-section">
-            <i class="fi fi-rr-site-alt"></i>
-            <span class="links_name">Lyric Explorer</span>
+          <a href="#products-section">
+            <i class="fi fi-rr-boxes"></i>
+            <span class="links_name">Productos - Stock</span>
           </a>
-          <span class="tooltip">Lyric Explorer</span>
+          <span class="tooltip">Productos - Stock</span>
         </li>
         <li>
-          <a href="#about-section">
-            <i class="fi fi-rr-info"></i>
-            <span class="links_name">About us</span>
+          <a href="#history-section">
+            <i class="fi fi-rr-files-medical"></i>
+            <span class="links_name">Historial - Compras</span>
           </a>
-          <span class="tooltip">About us</span>
+          <span class="tooltip">Historial - Compras</span>
         </li>
+        <li>
+          <a href="#orden-section">
+            <i class="fi fi-rr-arrow-progress"></i>
+            <span class="links_name">Orden - Compra</span>
+          </a>
+          <span class="tooltip">Orden - Compra</span>
+        </li>
+        <li class="profile">
         <li class="profile">
           <div class="profile-details">
             <img src="profile.jpg" alt="profileImg" />
             <div class="name_job">
-              <div id="user" class="name"> a</div>
+              <div id="user" class="name"></div>
             </div>
           </div>
           <i class="fi fi-rr-sign-out-alt" id="log_out"></i>
@@ -55,14 +65,54 @@
       </ul>
     </div>
     <!-- Library section-->
-    <section id="library-section" class="home-section">
+    <section id="supplier-section" class="home-section">
+      <div class="section-header">
+        <h2>Gestión de Proveedores</h2>
+        <button id="btn-add-product" class="btn-primary">+ Nuevo Proveedor</button>
+      </div>
+
+      <div class="search-box">
+        <input type="text" id="supplier-search" class="search-input" placeholder="Buscar proveedor..." />
+      </div>
+
+      <div id="supplier-table" class="data-table"></div>
+
+      <div id="supplier-modal" class="modal">
+        <div class="modal-content">
+          <h3 id="modal-title">Nuevo Proveedor</h3>
+
+          <form id="supplier-form">
+            <input type="hidden" id="supplier-id">
+
+            <div class="form-group">
+              <label>Nombre</label>
+              <input type="text" id="supplier-name" required>
+            </div>
+
+            <div class="form-group">
+              <label>Número</label>
+              <input type="text" id="supplier-phone" required>
+            </div>
+
+            <div class="form-group">
+              <label>Dirección</label>
+              <input type="text"  id="supplier-address" required>
+            </div>
+
+            <div class="modal-actions">
+              <button type="button" id="btn-cancel" class="btn-secondary">Cancelar</button>
+              <button type="submit" class="btn-primary">Guardar</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </section>
     <!-- Explorer section-->
-    <section id="explorer-section" class="home-section">
+    <section id="products-section" class="home-section">
     </section>
     <!-- About us section-->
-    <section id="about-section" class="home-section">
-    </section>
+    <section id="history-section" class="home-section"></section>
+    <section id="orden-section" class="home-section"></section>
 
     <script src="/js/dashboard/library-utils.js" ></script>
   </body>

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer, Numeric
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, Numeric
 
 from src.dev.config.base import Base
 
@@ -11,3 +11,5 @@ class PurchaseOrderDetail(Base):
     product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
     quantity = Column(Integer, nullable=False)
     unit_price = Column(Numeric(10, 2), nullable=False)
+    is_active = Column(Boolean, default=True)
+    deleted_at = Column(DateTime, nullable=True)

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer, Numeric, String
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, Numeric, String
 
 from src.dev.config.base import Base
 
@@ -15,3 +15,5 @@ class Product(Base):
     stock = Column(Integer, default=0)
     sale_price = Column(Numeric(10, 2), default=0)
     purchase_price = Column(Numeric(10, 2), default=0)
+    is_active = Column(Boolean, default=True)
+    deleted_at = Column(DateTime, nullable=True)

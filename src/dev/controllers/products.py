@@ -1,49 +1,96 @@
-import os
-import pathlib
-from typing import Optional
-
-from fastapi import HTTPException, Request, Response, status
-from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
-
-# Ruta base del proyecto
-BASE_DIR = pathlib.Path(__file__).resolve().parent.parent.parent
-print(BASE_DIR)
-
-templates = Jinja2Templates(directory=BASE_DIR / "views")
+from fastapi import HTTPException, status
+from fastapi.responses import JSONResponse
 
 
-class ProductsController:
+class ProductController:
     def __init__(self, product_model):
         self.product_model = product_model
 
-    async def create(self, data: dict):
+    @staticmethod
+    def _check_role(current_role: str, allowed_roles: list[str]) -> None:
+        """
+        Verifica que el rol tenga acceso permitido.
+        """
+        if current_role not in allowed_roles:
+            raise HTTPException(status_code=403, detail="Acceso no autorizado.")
+
+    async def get_all(self, current_role: str):
+        self._check_role(current_role, ["aux_almacen", "jefe_almacen", "admin"])
         try:
-            is_user_exist = await self.product_model.check(data)
-            if is_user_exist is True:
+            products = await self.product_model.get_all()
+            if not products:
+                return JSONResponse(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    content={
+                        "status_code": 400,
+                        "message": "There is some problem",
+                    },
+                )
+
+            return JSONResponse(
+                status_code=status.HTTP_200_OK,
+                content={"status_code": 200, "products": products},
+            )
+
+        except Exception as e:
+            print("Error in get_all:", e)
+            raise HTTPException(status_code=500, detail="Internal server error")
+
+    async def get_byId(self, current_role: str, product_id: int):
+        self._check_role(current_role, ["aux_almacen", "jefe_almacen", "admin"])
+        try:
+            product = await self.product_model.get_byId(product_id)
+            if not product:
+                return JSONResponse(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    content={
+                        "status_code": 400,
+                        "message": "There is some problem",
+                    },
+                )
+
+            return JSONResponse(
+                status_code=status.HTTP_200_OK,
+                content={"status_code": 200, "product": product},
+            )
+
+        except Exception as e:
+            print("Error in get_byId:", e)
+            raise HTTPException(status_code=500, detail="Internal server error")
+
+    async def create(self, current_role: str, data: dict):
+        """
+        Roles permitidos:
+        - aux_almacen
+        - jefe_almacen
+        - admin
+        """
+        self._check_role(current_role, ["aux_almacen", "jefe_almacen", "admin"])
+        try:
+            is_product_exist = await self.product_model.check(data)
+            if is_product_exist is True:
                 return JSONResponse(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     content={
                         "status": "error",
-                        "message": "Some of the data entered is already registered",
+                        "message": "The product already exists",
                     },
                 )
 
-            # Enviar correo de verificación
-            new_user = await self.product_model.create_worker(data)
-            if new_user:
+            new_product = await self.product_model.create(data)
+            if new_product:
                 return JSONResponse(
                     status_code=status.HTTP_201_CREATED,
                     content={
                         "status": "success",
-                        "message": "User successfully created",
+                        "message": "The product was created correctly",
                     },
                 )
             return JSONResponse(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 content={
                     "status": "error",
-                    "message": "User could not be created",
+                    "message": "Product could not be created",
                 },
             )
 
@@ -51,50 +98,61 @@ class ProductsController:
             print("Error in create:", e)
             raise HTTPException(status_code=500, detail="Internal server error")
 
-    async def auth(self, data: dict):
+    async def modify(self, current_role: str, product_id: int, new_data: dict):
+        self._check_role(current_role, ["aux_almacen", "jefe_almacen", "admin"])
         try:
-            auth_user = await self.product_model.auth(data)
-            if auth_user["status"] is False:
+            is_product_exist = await self.product_model.get_byId(product_id)
+            if not is_product_exist:
                 return JSONResponse(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     content={
-                        "status": "error",
-                        "message": "There is some problem with the data entered",
+                        "status_code": 400,
+                        "message": "The product does not exist",
                     },
                 )
 
-            response = RedirectResponse(
-                url=f"/user/{auth_user['name']}/dashboard",
-                status_code=302,
+            product_changed = await self.product_model.modify(product_id, new_data)
+            if product_changed:
+                return JSONResponse(
+                    status_code=status.HTTP_201_CREATED,
+                    content={
+                        "status": "success",
+                        "message": "The product was modified correctly",
+                    },
+                )
+            return JSONResponse(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                content={
+                    "status": "error",
+                    "message": "Product could not be modified",
+                },
             )
-
-            response.set_cookie(
-                key="user",
-                value=auth_user["auth"],
-                httponly=True,
-                samesite="lax",
-                secure=False,
-                path="/",
-                max_age=int(os.getenv("JWT_COOKIE_EXPIRATION", "3600")),
-            )
-            return response
 
         except Exception as e:
-            print("Error in auth:", e)
+            print("Error in modify:", e)
             raise HTTPException(status_code=500, detail="Internal server error")
 
-    # 🧩 ACCESS (dashboard by role)
-    async def access(self, name: str, user: dict, request: Request):
+    async def delete(self, current_role: str, product_id: int):
+        self._check_role(current_role, ["aux_almacen", "jefe_almacen", "admin"])
         try:
-            if user.get("user") != name:
-                return RedirectResponse(url="/", status_code=302)
-            return FileResponse(
-                path=BASE_DIR / "public" / "dash_aux_compra.html",
-                media_type="text/html",
+            product_deleted = await self.product_model.delete(product_id)
+            if not product_deleted:
+                return JSONResponse(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    content={
+                        "status_code": 400,
+                        "message": "Product could not be deleted",
+                    },
+                )
+
+            return JSONResponse(
+                status_code=status.HTTP_200_OK,
+                content={
+                    "status_code": 200,
+                    "message": "Product deleted correctly",
+                },
             )
-            # return templates.TemplateResponse(
-            #     "dashboard.html", {"request": request}  # "user": user}
-            # )
+
         except Exception as e:
-            print("Error accessing dashboard:", e)
+            print("Error in delete:", e)
             raise HTTPException(status_code=500, detail="Internal server error")

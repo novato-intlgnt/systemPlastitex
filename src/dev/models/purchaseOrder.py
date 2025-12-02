@@ -1,4 +1,13 @@
-from sqlalchemy import TIMESTAMP, Column, ForeignKey, Integer, Numeric, String
+from sqlalchemy import (
+    TIMESTAMP,
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    Numeric,
+    String,
+)
 
 from src.dev.config.base import Base
 
@@ -12,3 +21,5 @@ class PurchaseOrder(Base):
     date = Column(TIMESTAMP)
     total = Column(Numeric(10, 2), nullable=False)
     status = Column(String(20), default="pending")
+    is_active = Column(Boolean, default=True)
+    deleted_at = Column(DateTime, nullable=True)

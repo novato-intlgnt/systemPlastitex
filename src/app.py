@@ -6,19 +6,21 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from scalar_fastapi import Layout, get_scalar_api_reference
 
+from src.dev.routes.categories import categoryRouter
 from src.dev.routes.products import productRouter
 from src.dev.routes.suppliers import supplierRouter
+from src.dev.routes.units import unitRouter
 from src.dev.routes.users import userRouter
 
 
-def create_app(user_model):
+def create_app():
     app = FastAPI(title="Plastitex Dashboard", docs_url="/docs")
 
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[
-            "http://localhost:4000",
-            "http://127.0.0.1:4000",
+            "https://localhost:4000",
+            "https://127.0.0.1:4000",
         ],
         allow_credentials=True,
         allow_methods=["*"],
@@ -69,5 +71,7 @@ def create_app(user_model):
     app.include_router(userRouter)
     app.include_router(supplierRouter)
     app.include_router(productRouter)
+    app.include_router(categoryRouter)
+    app.include_router(unitRouter)
 
     return app

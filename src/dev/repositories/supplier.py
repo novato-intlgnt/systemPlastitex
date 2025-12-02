@@ -1,74 +1,132 @@
+from datetime import datetime
+
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from src.dev.config.db import async_session_maker
-from src.dev.models.user import User
-from src.dev.utils.security import decode, getPassHashed, sign, verifyPassHashed
+from src.dev.models.supplier import Supplier
 
 
-class SupplierRepositorie:
+class SupplierRepository:
     @staticmethod
     async def check(
-        input_data: dict, poolDB: async_sessionmaker[AsyncSession] = async_session_maker
+        data: dict, poolDB: async_sessionmaker[AsyncSession] = async_session_maker
     ):
-        user = input_data["user"]
-        rol = input_data["role"]
+        name = data["name"]
+        phone = data["phone"]
         async with poolDB() as session:
-            query = select(User).where((User.username == user) & (User.role == rol))
+            query = select(Supplier).where(
+                (Supplier.name == name) & (Supplier.phone == phone)
+            )
             result = await session.execute(query)
-        user = result.first()
-        return user is not None
+        supplier = result.first()
+        return supplier is not None
 
     @staticmethod
-    async def create_worker(
-        input_data: dict, poolDB: async_sessionmaker[AsyncSession] = async_session_maker
-    ):
-        user = input_data["user"]
-        name = input_data["name"]
-        role = input_data["role"]
-        password = getPassHashed(input_data["pass"])
+    async def get_all(poolDB: async_sessionmaker[AsyncSession] = async_session_maker):
+        async with poolDB() as session:
+            query = select(Supplier).where(Supplier.is_active == True)
+            result = await session.execute(query)
+        suppliers = result.scalars().all()
+        suppliers_list = []
+        for supplier in suppliers:
+            suppliers_list.append(
+                {
+                    "id": supplier.id,
+                    "name": supplier.name,
+                    "phone": supplier.phone,
+                    "address": supplier.address,
+                }
+            )
+        return suppliers_list
 
-        newUser = User(username=user, password=password, fullname=name, role=role)
+    @staticmethod
+    async def get_byId(
+        idSupp: int, poolDB: async_sessionmaker[AsyncSession] = async_session_maker
+    ):
+        async with poolDB() as session:
+            query = select(Supplier).where((Supplier.id == idSupp))
+            result = await session.execute(query)
+        supplier = result.scalar_one_or_none()
+        return {
+            "id": supplier.id,
+            "name": supplier.name,
+            "phone": supplier.phone,
+            "address": supplier.address,
+        }
+
+    @staticmethod
+    async def create(
+        supplier_data: dict,
+        poolDB: async_sessionmaker[AsyncSession] = async_session_maker,
+    ):
+        name = supplier_data["name"]
+        phone = supplier_data["phone"]
+        address = supplier_data["address"]
+
+        new_supplier = Supplier(name=name, phone=phone, address=address)
         async with poolDB() as session:
             try:
-                session.add(newUser)
+                session.add(new_supplier)
                 await session.commit()
-                await session.refresh(newUser)
+                await session.refresh(new_supplier)
                 return {"status": True}
 
             except IntegrityError:
                 await session.rollback()
-                raise HTTPException(400, "El usuario ya existe")
+                raise HTTPException(400, "El proveedor ya existe")
 
             except SQLAlchemyError:
                 await session.rollback()
                 raise HTTPException(500, "Error en la base de datos")
 
     @staticmethod
-    async def auth(
-        input_data: dict, poolDB: async_sessionmaker[AsyncSession] = async_session_maker
+    async def modify(
+        supp_id: int,
+        new_data: dict,
+        poolDB: async_sessionmaker[AsyncSession] = async_session_maker,
     ):
-        username = input_data["user"]
-        password = input_data["pass"]
-
         async with poolDB() as session:
-            query = select(User.password, User.role, User.fullname).where(
-                User.username == username
-            )
-            result = await session.execute(query)
-        user = result.first()
-        passHashed = user.password
-        roleUser = user.role
-        fullname = user.fullname
-        if verifyPassHashed(password, passHashed) is False:
-            return {
-                "status": False,
-            }
+            try:
+                supplier = await session.get(Supplier, supp_id)
+                if not supplier:
+                    raise HTTPException(404, "The supplier is not exists")
 
-        print(input_data)
-        token = sign({"user": username, "role": roleUser, "name": fullname})
-        print(token)
+                for key, value in new_data.items():
+                    if hasattr(supplier, key):
+                        setattr(supplier, key, value)
 
-        return {"auth": token, "name": username, "status": True}
+                await session.commit()
+                await session.refresh(supplier)
+
+                return {"status": True}
+            except SQLAlchemyError:
+                await session.rollback()
+                raise HTTPException(500, "Error en la base de datos")
+
+    @staticmethod
+    async def delete(
+        supp_id: int, poolDB: async_sessionmaker[AsyncSession] = async_session_maker
+    ):
+        async with poolDB() as session:
+            try:
+                supplier = await session.get(Supplier, supp_id)
+
+                if not supplier:
+                    raise HTTPException(404, "Proveedor no encontrado")
+
+                if not supplier.is_active:
+                    raise HTTPException(400, "El proveedor ya está eliminado")
+
+                supplier.is_active = False
+                supplier.deleted_at = datetime.utcnow()
+
+                await session.commit()
+
+                return {"status": True, "message": "Proveedor eliminado"}
+
+            except SQLAlchemyError:
+                await session.rollback()
+                raise HTTPException(500, "Error en la base de datos")

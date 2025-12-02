@@ -5,10 +5,10 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from src.dev.config.db import async_session_maker
 from src.dev.models.user import User
-from src.dev.utils.security import decode, getPassHashed, sign, verifyPassHashed
+from src.dev.utils.security import getPassHashed, sign, verifyPassHashed
 
 
-class UserRepositorie:
+class UserRepository:
     @staticmethod
     async def check(
         input_data: dict, poolDB: async_sessionmaker[AsyncSession] = async_session_maker

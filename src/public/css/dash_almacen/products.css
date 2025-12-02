@@ -1,0 +1,100 @@
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px;
+  color: #fff;
+}
+
+.btn-primary {
+  background: #f05454;
+  border: none;
+  padding: 10px 18px;
+  color: white;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.btn-primary:hover {
+  background: #d94343;
+}
+
+.btn-secondary {
+  background: #aaa;
+  color: #fff;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.search-box {
+  padding: 0 25px 20px;
+}
+
+.search-input {
+  width: 300px;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 25px;
+  width: 420px;
+  border-radius: 10px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+.form-group input,
+.form-group select {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Acciones de tabla */
+.table-btn {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 12px;
+  cursor: pointer;
+  color: #fff;
+}
+.table-btn.edit {
+  background: #3c91e6;
+}
+.table-btn.delete {
+  background: #d94343;
+}
+
+.data-table {
+  width: 95%;
+  position: absolute;
+  left: 2.5%;
+}
