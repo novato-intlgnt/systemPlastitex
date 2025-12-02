@@ -8,6 +8,7 @@ from sqlalchemy import (
     Numeric,
     String,
 )
+from sqlalchemy.orm import relationship
 
 from src.dev.config.base import Base
 
@@ -23,3 +24,7 @@ class PurchaseOrder(Base):
     status = Column(String(20), default="pending")
     is_active = Column(Boolean, default=True)
     deleted_at = Column(DateTime, nullable=True)
+
+    # relaciones
+    supplier = relationship("Supplier", foreign_keys=[supplier_id])
+    details = relationship("PurchaseOrderDetail", back_populates="order")

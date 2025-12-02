@@ -7,7 +7,9 @@ from fastapi.staticfiles import StaticFiles
 from scalar_fastapi import Layout, get_scalar_api_reference
 
 from src.dev.routes.categories import categoryRouter
+from src.dev.routes.Clientes_Gestion import router as client_router
 from src.dev.routes.products import productRouter
+from src.dev.routes.purchase_orders import router as purchase_orders_router
 from src.dev.routes.reports import reportRouter
 from src.dev.routes.suppliers import supplierRouter
 from src.dev.routes.units import unitRouter
@@ -75,5 +77,7 @@ def create_app():
     app.include_router(categoryRouter)
     app.include_router(unitRouter)
     app.include_router(reportRouter)
+    app.include_router(purchase_orders_router)
+    app.include_router(client_router)
 
     return app

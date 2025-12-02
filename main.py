@@ -1,4 +1,5 @@
 from src.app import create_app
+from src.dev.models import *  # importar todos los modelos
 
 # Crear la app con dependencias inyectadas (como en JS)
 app = create_app()
