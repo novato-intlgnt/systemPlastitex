@@ -6,6 +6,8 @@ new TableModule({
   modalId: "product-modal",
   formId: "product-form",
   btnAddId: "btn-add-product",
+  btnCancelId: "btn-cancel-product",
+  modalTitleId: "modal-title-product",
   apiBase: `${window.location.origin}/product`,
 
   columns: [
