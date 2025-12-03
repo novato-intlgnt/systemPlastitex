@@ -2,30 +2,40 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Dashboard</title>
+    <title>Dashboard - Aux Almacén</title>
     <link rel="shortcut icon" href="/assets/icons/favicon.ico" />
     <link rel="stylesheet" href="/css/dashboard.css" />
-    <link rel="stylesheet" href="/css/dash_almacen/products.css" />
-    <!-- Boxicons CDN Link -->
+    <link rel="stylesheet" href="/css/dashboard-common.css" />
+    <!-- Icons -->
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+    <!-- Tabulator -->
     <link href="https://unpkg.com/tabulator-tables@6.2.5/dist/css/tabulator_midnight.min.css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://unpkg.com/tabulator-tables@6.2.5/dist/js/tabulator.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
     <script src="/js/dashboard.js" defer></script>
+    <!-- Módulos JS -->
+    <script type="module" src="/js/dash_almacen/clients.js" defer></script>
     <script type="module" src="/js/dash_almacen/products.js" defer></script>
+    <script type="module" src="/js/dash_almacen/entry-notes.js" defer></script>
+    <script type="module" src="/js/dash_almacen/stock.js" defer></script>
+    <script type="module" src="/js/dash_almacen/kardex.js" defer></script>
+    <script type="module" src="/js/dash_almacen/exit-notes.js" defer></script>
   </head>
   <body>
+    <!-- ================================================================== -->
+    <!-- SIDEBAR -->
+    <!-- ================================================================== -->
     <div class="sidebar">
       <div class="logo-details">
-        <img src="/assets/images/logo.jpg" class="logo"></img>
+        <img src="/assets/images/logo.jpg" class="logo">
         <div class="logo_name">PlastiTex</div>
         <i class="fi fi-rr-menu-burger" id="btn"></i>
       </div>
       <ul class="nav-list">
         <li>
-          <a id="btn-library" href="#">
+          <a href="#clients-section">
             <i class="fi fi-rr-customer-care"></i>
             <span class="links_name">Clientes</span>
           </a>
@@ -41,9 +51,9 @@
         <li>
           <a href="#entryNote-section">
             <i class="fi fi-rr-wallet-income"></i>
-            <span class="links_name">Nota - Ingreso</span>
+            <span class="links_name">Nota Ingreso</span>
           </a>
-          <span class="tooltip">Nota - Ingreso</span>
+          <span class="tooltip">Nota Ingreso</span>
         </li>
         <li>
           <a href="#stock-section">
@@ -62,29 +72,80 @@
         <li>
           <a href="#exitNote-section">
             <i class="fi fi-rr-airplay"></i>
-            <span class="links_name">Nota - Salida</span>
+            <span class="links_name">Nota Salida</span>
           </a>
-          <span class="tooltip">Nota - Salida</span>
+          <span class="tooltip">Nota Salida</span>
         </li>
         <li class="profile">
           <div class="profile-details">
             <img src="profile.jpg" alt="profileImg" />
             <div class="name_job">
-              <div id="user" class="name"> a</div>
+              <div id="user" class="name"></div>
             </div>
           </div>
           <i class="fi fi-rr-sign-out-alt" id="log_out"></i>
         </li>
       </ul>
     </div>
-    <!-- Library section-->
+
+    <!-- ================================================================== -->
+    <!-- SECCIÓN: CLIENTES (CRUD) -->
+    <!-- ================================================================== -->
     <section id="clients-section" class="home-section">
+      <div class="section-header">
+        <h2>Gestión de Clientes</h2>
+        <button id="btn-add-client" class="btn-primary">
+          <i class="fi fi-rr-plus"></i> Nuevo Cliente
+        </button>
+      </div>
+
+      <div class="search-box">
+        <input type="text" id="client-search" class="search-input" placeholder="Buscar cliente..." />
+      </div>
+
+      <div id="clients-table" class="data-table"></div>
+
+      <!-- Modal Cliente -->
+      <div id="client-modal" class="modal">
+        <div class="modal-content">
+          <span class="modal-close" onclick="document.getElementById('client-modal').style.display='none'">&times;</span>
+          <h3 id="modal-title-client">Nuevo Cliente</h3>
+          <form id="client-form">
+            <input type="hidden" name="id" id="client-id">
+            <div class="form-group">
+              <label for="client-name">Nombre</label>
+              <input type="text" name="name" id="client-name" required>
+            </div>
+            <div class="form-group">
+              <label for="client-email">Email</label>
+              <input type="email" name="email" id="client-email" required>
+            </div>
+            <div class="form-group">
+              <label for="client-phone">Teléfono</label>
+              <input type="text" name="phone" id="client-phone">
+            </div>
+            <div class="form-group">
+              <label for="client-address">Dirección</label>
+              <input type="text" name="address" id="client-address">
+            </div>
+            <div class="modal-actions">
+              <button type="button" id="btn-cancel-client" class="btn-secondary">Cancelar</button>
+              <button type="submit" class="btn-primary">Guardar</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </section>
-    <!-- products section-->
+
+    <!-- ================================================================== -->
+    <!-- SECCIÓN: PRODUCTOS (CRUD) -->
+    <!-- ================================================================== -->
     <section id="products-section" class="home-section">
       <div class="section-header">
         <h2>Gestión de Productos</h2>
-        <button id="btn-add-product" class="btn-primary">+ Nuevo Producto</button>
+        <button id="btn-add-product" class="btn-primary">
+          <i class="fi fi-rr-plus"></i> Nuevo Producto
+        </button>
       </div>
 
       <div class="search-box">
@@ -93,44 +154,41 @@
 
       <div id="products-table" class="data-table"></div>
 
+      <!-- Modal Producto -->
       <div id="product-modal" class="modal">
         <div class="modal-content">
-          <span class="modal-close" id="modal-close-product">&times;</span>
+          <span class="modal-close" onclick="document.getElementById('product-modal').style.display='none'">&times;</span>
           <h3 id="modal-title-product">Nuevo Producto</h3>
-
           <form id="product-form">
             <input type="hidden" name="id" id="product-id">
-
             <div class="form-group">
               <label for="product-name">Nombre</label>
               <input type="text" name="name" id="product-name" required>
             </div>
-
-            <div class="form-group">
-              <label for="product-category">Categoría</label>
-              <select name="category_id" id="product-category" required></select>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="product-category">Categoría</label>
+                <select name="category_id" id="product-category" required></select>
+              </div>
+              <div class="form-group">
+                <label for="product-unit">Unidad</label>
+                <select name="unit_id" id="product-unit" required></select>
+              </div>
             </div>
-
             <div class="form-group">
-              <label for="product-unit">Unidad</label>
-              <select name="unit_id" id="product-unit" required></select>
+              <label for="product-stock">Stock Inicial</label>
+              <input type="number" name="stock" id="product-stock" min="0" value="0" required>
             </div>
-
-            <div class="form-group">
-              <label for="product-stock">Stock</label>
-              <input type="number" name="stock" id="product-stock" min="0" required>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="product-sale">Precio Venta (Bs.)</label>
+                <input type="number" name="sale_price" step="0.01" id="product-sale" required>
+              </div>
+              <div class="form-group">
+                <label for="product-purchase">Precio Compra (Bs.)</label>
+                <input type="number" name="purchase_price" step="0.01" id="product-purchase" required>
+              </div>
             </div>
-
-            <div class="form-group">
-              <label for="product-sale">Precio Venta</label>
-              <input type="number" name="sale_price" step="0.01" id="product-sale" required>
-            </div>
-
-            <div class="form-group">
-              <label for="product-purchase">Precio Compra</label>
-              <input type="number" name="purchase_price" step="0.01" id="product-purchase" required>
-            </div>
-
             <div class="modal-actions">
               <button type="button" id="btn-cancel-product" class="btn-secondary">Cancelar</button>
               <button type="submit" class="btn-primary">Guardar</button>
@@ -140,12 +198,241 @@
       </div>
     </section>
 
+    <!-- ================================================================== -->
+    <!-- SECCIÓN: NOTAS DE INGRESO (Warehouse Inbound) -->
+    <!-- ================================================================== -->
+    <section id="entryNote-section" class="home-section">
+      <div class="section-header">
+        <h2>Notas de Ingreso</h2>
+        <button id="btn-add-entry-note" class="btn-primary">
+          <i class="fi fi-rr-plus"></i> Nueva Nota
+        </button>
+      </div>
 
-    <section id="entryNote-section" class="home-section"></section>
-    <section id="stock-section" class="home-section"></section>
-    <section id="kardex-section" class="home-section"></section>
-    <section id="exitNote-section" class="home-section"></section>
+      <div id="entry-notes-table" class="data-table"></div>
 
-    <script src="/js/dashboard/library-utils.js" ></script>
+      <!-- Sección de Items -->
+      <div class="items-section">
+        <div class="items-header">
+          <h4>Productos de la Nota</h4>
+          <div>
+            <span id="selected-note-info" class="selected-note-info">Seleccione una nota</span>
+            <button id="btn-add-item" class="btn-primary" disabled>
+              <i class="fi fi-rr-plus"></i> Agregar Producto
+            </button>
+          </div>
+        </div>
+        <div id="entry-items-table"></div>
+      </div>
+
+      <!-- Modal Nueva Nota de Ingreso -->
+      <div id="entry-note-modal" class="modal">
+        <div class="modal-content">
+          <span class="modal-close" onclick="document.getElementById('entry-note-modal').style.display='none'">&times;</span>
+          <h3 id="entry-note-modal-title">Nueva Nota de Ingreso</h3>
+          <form id="entry-note-form">
+            <div class="form-group">
+              <label for="entry-supplier">Proveedor</label>
+              <select name="supplier_id" id="entry-supplier" required>
+                <option value="">Seleccione proveedor</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="entry-reference">Referencia (Opcional)</label>
+              <input type="text" name="reference" id="entry-reference" placeholder="Ej: Factura #123">
+            </div>
+            <div class="modal-actions">
+              <button type="button" id="btn-cancel-entry-note" class="btn-secondary">Cancelar</button>
+              <button type="submit" class="btn-primary">Crear Nota</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Modal Agregar Item -->
+      <div id="entry-item-modal" class="modal">
+        <div class="modal-content">
+          <span class="modal-close" onclick="document.getElementById('entry-item-modal').style.display='none'">&times;</span>
+          <h3 id="entry-item-modal-title">Agregar Producto</h3>
+          <form id="entry-item-form">
+            <div class="form-group">
+              <label for="item-product">Producto</label>
+              <select name="product_id" id="item-product" required>
+                <option value="">Seleccione producto</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="item-quantity">Cantidad</label>
+              <input type="number" name="quantity" id="item-quantity" min="1" value="1" required>
+            </div>
+            <div class="modal-actions">
+              <button type="button" id="btn-cancel-entry-item" class="btn-secondary">Cancelar</button>
+              <button type="submit" class="btn-primary">Agregar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- SECCIÓN: STOCK (Reporte) -->
+    <!-- ================================================================== -->
+    <section id="stock-section" class="home-section">
+      <div class="section-header">
+        <h2>Reporte de Stock</h2>
+        <button id="btn-refresh-stock" class="btn-icon">
+          <i class="fi fi-rr-refresh"></i> Actualizar
+        </button>
+      </div>
+
+      <!-- Filtros -->
+      <div class="filters-box">
+        <div class="filter-group">
+          <label>Producto</label>
+          <select id="filter-product">
+            <option value="">Todos los productos</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Buscar</label>
+          <input type="text" id="stock-search" placeholder="Buscar..." class="search-input">
+        </div>
+      </div>
+
+      <!-- Resumen -->
+      <div id="stock-summary" class="summary-box"></div>
+
+      <div id="stock-table" class="data-table"></div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- SECCIÓN: KARDEX (Reporte de movimientos) -->
+    <!-- ================================================================== -->
+    <section id="kardex-section" class="home-section">
+      <div class="section-header">
+        <h2>Kardex de Productos</h2>
+      </div>
+
+      <!-- Filtros -->
+      <div class="filters-box">
+        <div class="filter-group">
+          <label>Producto *</label>
+          <select id="kardex-product" required>
+            <option value="">Seleccione un producto</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Fecha Inicio</label>
+          <input type="date" id="kardex-start-date">
+        </div>
+        <div class="filter-group">
+          <label>Fecha Fin</label>
+          <input type="date" id="kardex-end-date">
+        </div>
+        <div class="filter-actions">
+          <button id="btn-filter-kardex" class="btn-primary">
+            <i class="fi fi-rr-filter"></i> Filtrar
+          </button>
+          <button id="btn-clear-kardex" class="btn-secondary">Limpiar</button>
+        </div>
+      </div>
+
+      <!-- Info del producto -->
+      <div id="kardex-product-info" style="padding: 0 25px;">
+        <p class="text-muted">Seleccione un producto para ver su kardex</p>
+      </div>
+
+      <!-- Resumen -->
+      <div id="kardex-summary" class="summary-box"></div>
+
+      <div id="kardex-table" class="data-table"></div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- SECCIÓN: NOTAS DE SALIDA (Warehouse Outbound) -->
+    <!-- ================================================================== -->
+    <section id="exitNote-section" class="home-section">
+      <div class="section-header">
+        <h2>Notas de Salida</h2>
+        <button id="btn-add-exit-note" class="btn-primary">
+          <i class="fi fi-rr-plus"></i> Nueva Nota
+        </button>
+      </div>
+
+      <div id="exit-notes-table" class="data-table"></div>
+
+      <!-- Sección de Items -->
+      <div class="items-section">
+        <div class="items-header">
+          <h4>Productos de la Nota</h4>
+          <div>
+            <span id="selected-exit-note-info" class="selected-note-info">Seleccione una nota</span>
+            <button id="btn-add-exit-item" class="btn-primary" disabled>
+              <i class="fi fi-rr-plus"></i> Agregar Producto
+            </button>
+          </div>
+        </div>
+        <div id="exit-items-table"></div>
+      </div>
+
+      <!-- Modal Nueva Nota de Salida -->
+      <div id="exit-note-modal" class="modal">
+        <div class="modal-content">
+          <span class="modal-close" onclick="document.getElementById('exit-note-modal').style.display='none'">&times;</span>
+          <h3 id="exit-note-modal-title">Nueva Nota de Salida</h3>
+          <form id="exit-note-form">
+            <div class="form-group">
+              <label for="exit-customer">Cliente</label>
+              <select name="customer_id" id="exit-customer" required>
+                <option value="">Seleccione cliente</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="exit-total">Total (Bs.)</label>
+                <input type="number" name="total" id="exit-total" step="0.01" min="0" value="0">
+              </div>
+              <div class="form-group">
+                <label for="exit-reference">Referencia</label>
+                <input type="text" name="reference" id="exit-reference" placeholder="Ej: Venta #123">
+              </div>
+            </div>
+            <div class="modal-actions">
+              <button type="button" id="btn-cancel-exit-note" class="btn-secondary">Cancelar</button>
+              <button type="submit" class="btn-primary">Crear Nota</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Modal Agregar Item Salida -->
+      <div id="exit-item-modal" class="modal">
+        <div class="modal-content">
+          <span class="modal-close" onclick="document.getElementById('exit-item-modal').style.display='none'">&times;</span>
+          <h3 id="exit-item-modal-title">Agregar Producto</h3>
+          <form id="exit-item-form">
+            <div class="form-group">
+              <label for="exit-item-product">Producto</label>
+              <select name="product_id" id="exit-item-product" required>
+                <option value="">Seleccione producto</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="exit-item-quantity">Cantidad</label>
+              <input type="number" name="quantity" id="exit-item-quantity" min="1" value="1" required>
+            </div>
+            <p class="text-muted" style="font-size: 12px;">
+              <i class="fi fi-rr-info"></i> Se validará el stock disponible antes de agregar.
+            </p>
+            <div class="modal-actions">
+              <button type="button" id="btn-cancel-exit-item" class="btn-secondary">Cancelar</button>
+              <button type="submit" class="btn-primary">Agregar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <script src="/js/dashboard/library-utils.js"></script>
   </body>
 </html>
