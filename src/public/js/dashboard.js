@@ -22,7 +22,34 @@ function menuBtnChange () {
   }
 }
 
+/**
+ * Verifica si hay un token válido, si no redirige al login
+ */
+function checkAuth() {
+  const token = localStorage.getItem('access_token')
+  if (!token) {
+    window.location.href = '/'
+    return false
+  }
+  return true
+}
+
+/**
+ * Función de logout - elimina el token y redirige al login
+ */
+function logout() {
+  localStorage.removeItem('access_token')
+  localStorage.removeItem('user_data')
+  window.location.href = '/'
+}
+
+// Exponer logout globalmente para poder usarlo en onclick
+window.logout = logout
+
 document.addEventListener('DOMContentLoaded', function () {
+  // Verificar autenticación
+  if (!checkAuth()) return
+
   const path = window.location.pathname
   const parts = path.split('/')
   const userName = parts[2]
@@ -31,5 +58,16 @@ document.addEventListener('DOMContentLoaded', function () {
   const nameHtml = document.getElementById('user')
   if (userName) {
     nameHtml.innerText = userName
+  }
+
+  // También podemos usar los datos guardados del usuario
+  const userData = localStorage.getItem('user_data')
+  if (userData) {
+    try {
+      const user = JSON.parse(userData)
+      console.log('Usuario logueado:', user.name, '- Rol:', user.role)
+    } catch (e) {
+      console.error('Error parsing user data:', e)
+    }
   }
 })

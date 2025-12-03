@@ -45,6 +45,10 @@ class UserController:
             raise HTTPException(status_code=500, detail="Internal server error")
 
     async def auth(self, data: dict):
+        """
+        Autentica al usuario y devuelve el token JWT en el body.
+        El frontend debe guardar el token y enviarlo en el header Authorization.
+        """
         try:
             auth_user = await self.user_model.auth(data)
             if auth_user["status"] is False:
@@ -56,21 +60,24 @@ class UserController:
                     },
                 )
 
-            response = RedirectResponse(
-                url=f"/user/{auth_user['name']}/dashboard",
-                status_code=302,
+            # Devolver el token en el body para que el frontend lo guarde
+            return JSONResponse(
+                status_code=status.HTTP_200_OK,
+                content={
+                    "status": "success",
+                    "message": "Login exitoso",
+                    "data": {
+                        "access_token": auth_user["auth"],
+                        "token_type": "Bearer",
+                        "user": {
+                            "id": auth_user.get("id"),
+                            "name": auth_user["name"],
+                            "role": auth_user.get("role"),
+                        },
+                        "redirect_url": f"/user/{auth_user['name']}/dashboard",
+                    },
+                },
             )
-
-            response.set_cookie(
-                key="user",
-                value=auth_user["auth"],
-                httponly=True,
-                samesite="none",
-                secure=True,
-                path="/",
-                max_age=int(os.getenv("JWT_COOKIE_EXPIRATION", "3600")),
-            )
-            return response
 
         except Exception as e:
             print("Error in auth:", e)

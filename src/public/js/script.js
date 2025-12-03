@@ -30,27 +30,34 @@ async function handleLogin(event) {
     const res = await fetch(`${url}/user/signin`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: 'include',
       body: JSON.stringify({
         user: user,
         pass: password,
       }),
     });
 
-    if (res.redirected) {
-        window.location.href = res.url;
-    }
-
+    const data = await res.json();
 
     if (!res.ok) {
       return showAlert(data.message || "Error al iniciar sesión", "error");
     }
 
-    const data = await res.json();
-    showAlert("¡Acceso concedido! Redirigiendo...", "success");
-
-    console.log(res)
+    // Guardar token y datos del usuario en localStorage
+    if (data.data && data.data.access_token) {
+      localStorage.setItem("access_token", data.data.access_token);
+      localStorage.setItem("user_data", JSON.stringify(data.data.user));
+      
+      showAlert("¡Acceso concedido! Redirigiendo...", "success");
+      
+      // Redirigir al dashboard
+      setTimeout(() => {
+        window.location.href = data.data.redirect_url;
+      }, 500);
+    } else {
+      showAlert("Error en la respuesta del servidor", "error");
+    }
   } catch (err) {
+    console.error("Login error:", err);
     showAlert("Error de conexión con el servidor", "error");
   }
 }
