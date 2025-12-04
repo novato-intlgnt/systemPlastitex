@@ -56,16 +56,23 @@ class UserController:
                     },
                 )
 
-            response = RedirectResponse(
-                url=f"/user/{auth_user['name']}/dashboard",
-                status_code=302,
+            # response = RedirectResponse(
+            #     url=f"/user/{auth_user['name']}/dashboard",
+            #     status_code=302,
+            # )
+            response = JSONResponse(
+                content={
+                    "status": "ok",
+                    "status_code": 302,
+                    "redirect": f"user/{auth_user['name']}/dashboard",
+                }
             )
 
             response.set_cookie(
                 key="user",
                 value=auth_user["auth"],
                 httponly=True,
-                samesite="none",
+                samesite="lax",
                 secure=True,
                 path="/",
                 max_age=int(os.getenv("JWT_COOKIE_EXPIRATION", "3600")),

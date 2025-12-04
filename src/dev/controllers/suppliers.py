@@ -32,7 +32,7 @@ class SupplierController:
             raise HTTPException(status_code=403, detail="Acceso no autorizado.")
 
     async def get_all(self, current_role: str):
-        self._check_role(current_role, ["aux_compra", "admin"])
+        self._check_role(current_role, ["aux_compra", "aux_almacen", "admin"])
         try:
             suppliers = await self.supplier_model.get_all()
             if not suppliers:
