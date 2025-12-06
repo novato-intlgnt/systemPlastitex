@@ -224,7 +224,7 @@ class ReportController:
     ):
         """
         Productos Bajo Stock para Aux Compra - Con query dinámica.
-        
+
         Roles permitidos: aux_compra, admin
 
         Args:
@@ -250,8 +250,7 @@ class ReportController:
         except Exception as e:
             print("Error in get_low_stock_aux_compra:", e)
             raise HTTPException(
-                status_code=500, 
-                detail="Error al obtener productos con bajo stock."
+                status_code=500, detail="Error al obtener productos con bajo stock."
             )
 
     async def get_purchase_history_filtered(
@@ -263,7 +262,7 @@ class ReportController:
     ):
         """
         Historial de Compras con filtros opcionales para Aux Compra.
-        
+
         Roles permitidos: aux_compra, admin
 
         Args:
@@ -297,8 +296,7 @@ class ReportController:
         except Exception as e:
             print("Error in get_purchase_history_filtered:", e)
             raise HTTPException(
-                status_code=500, 
-                detail="Error al obtener el historial de compras."
+                status_code=500, detail="Error al obtener el historial de compras."
             )
 
     async def get_stock_aux_almacen(
@@ -308,7 +306,7 @@ class ReportController:
     ):
         """
         Stock para Aux Almacén - Con filtro opcional por producto.
-        
+
         Roles permitidos: aux_almacen, admin
 
         Args:
@@ -322,19 +320,43 @@ class ReportController:
 
         try:
             data = await self.report_repositorie.get_stock_by_product(product_id)
+            print(data)
+            result_list = []
+            for product in data:
+                result_list.append(
+                    {
+                        "product_id": product["product_id"],
+                        "product_name": product["product_name"],
+                        "stock": product["current_stock"],
+                        "category_name": product["category_name"],
+                        "unit_name": product["unit_name"],
+                        "total_entries": product["total_entries"],
+                        "total_exits": product["total_exits"],
+                        "sale_price": (
+                            float(product["sale_price"])
+                            if product["sale_price"]
+                            else None
+                        ),
+                        "purchase_price": (
+                            float(product["purchase_price"])
+                            if product["purchase_price"]
+                            else None
+                        ),
+                    }
+                )
+
             return JSONResponse(
                 status_code=200,
                 content={
                     "status": "success",
-                    "data": data,
-                    "count": len(data),
+                    "data": result_list,
+                    "count": len(result_list),
                 },
             )
         except Exception as e:
             print("Error in get_stock_aux_almacen:", e)
             raise HTTPException(
-                status_code=500, 
-                detail="Error al obtener información de stock."
+                status_code=500, detail="Error al obtener información de stock."
             )
 
     async def get_kardex_by_product(
@@ -346,7 +368,7 @@ class ReportController:
     ):
         """
         Kardex por Producto para Aux Almacén.
-        
+
         Roles permitidos: aux_almacen, admin
 
         Args:
@@ -361,10 +383,7 @@ class ReportController:
         self._check_role(current_role, ["aux_almacen", "admin"])
 
         if not product_id:
-            raise HTTPException(
-                status_code=400, 
-                detail="El product_id es requerido."
-            )
+            raise HTTPException(status_code=400, detail="El product_id es requerido.")
 
         try:
             data = await self.report_repositorie.get_kardex_by_product(
@@ -386,6 +405,5 @@ class ReportController:
         except Exception as e:
             print("Error in get_kardex_by_product:", e)
             raise HTTPException(
-                status_code=500, 
-                detail="Error al obtener el kardex del producto."
+                status_code=500, detail="Error al obtener el kardex del producto."
             )

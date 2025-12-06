@@ -13,7 +13,7 @@ function initTable() {
     data: [],
     layout: "fitColumns",
     pagination: "local",
-    paginationSize: 15,
+    paginationSize: 20,
     height: "70vh",
     placeholder: "No hay datos de stock",
     columns: [
@@ -52,7 +52,7 @@ function initTable() {
         width: 100, 
         hozAlign: "right",
         formatter: "money",
-        formatterParams: { symbol: "Bs. ", precision: 2 }
+        formatterParams: { symbol: "$/. ", precision: 2 }
       },
       { 
         title: "P. Compra", 
@@ -60,7 +60,7 @@ function initTable() {
         width: 100, 
         hozAlign: "right",
         formatter: "money",
-        formatterParams: { symbol: "Bs. ", precision: 2 }
+        formatterParams: { symbol: "$/. ", precision: 2 }
       },
     ],
   });
@@ -112,7 +112,7 @@ function updateSummary(data) {
       </div>
       <div class="summary-card">
         <span class="summary-label">Valor Inventario</span>
-        <span class="summary-value">Bs. ${totalValue.toFixed(2)}</span>
+        <span class="summary-value">$/. ${totalValue.toFixed(2)}</span>
       </div>
     `;
   }

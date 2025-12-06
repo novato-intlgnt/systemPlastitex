@@ -293,26 +293,46 @@ $$ LANGUAGE plpgsql;
 
 -- 3.6 Stock Detallado por Producto
 CREATE OR REPLACE FUNCTION sp_get_stock_by_product(
-    p_product_id INT DEFAULT NULL
+    prod_id INT DEFAULT NULL
 )
 RETURNS TABLE (
     product_id INT,
     product_name VARCHAR,
+    category_name VARCHAR,
+    unit_name VARCHAR,
     current_stock INT,
     total_entries BIGINT,
-    total_exits BIGINT
+    total_exits BIGINT,
+    purchase_price NUMERIC(10,2),
+    sale_price NUMERIC(10,2)
 ) AS $$
 BEGIN
     RETURN QUERY
     SELECT 
         p.id, 
         p.name, 
+        COALESCE(c.name, 'Sin categoría') as category_name,  -- Maneja NULL
+        COALESCE(u.name, 'Sin unidad') as unit_name,         -- Maneja NULL
         p.stock,
-        (SELECT COALESCE(SUM(quantity), 0) FROM entry_note_detail WHERE product_id = p.id AND is_active = TRUE)::BIGINT,
-        (SELECT COALESCE(SUM(quantity), 0) FROM exit_note_detail WHERE product_id = p.id AND is_active = TRUE)::BIGINT
+        COALESCE((
+            SELECT SUM(e.quantity)
+            FROM entry_note_detail e
+            WHERE e.product_id = p.id 
+              AND e.is_active = TRUE
+        ), 0)::BIGINT,
+        COALESCE((
+            SELECT SUM(x.quantity)
+            FROM exit_note_detail x
+            WHERE x.product_id = p.id 
+              AND x.is_active = TRUE
+        ), 0)::BIGINT,
+        COALESCE(p.purchase_price, 0)::NUMERIC(10,2),
+        COALESCE(p.sale_price, 0)::NUMERIC(10,2)
     FROM products p
+    LEFT JOIN categories c ON p.category_id = c.id  -- LEFT JOIN por si no tiene categoría
+    LEFT JOIN units u ON p.unit_id = u.id          -- LEFT JOIN por si no tiene unidad
     WHERE p.is_active = TRUE 
-      AND (p_product_id IS NULL OR p.id = p_product_id)
+      AND (prod_id IS NULL OR p.id = prod_id)
     ORDER BY p.name;
 END;
 $$ LANGUAGE plpgsql;

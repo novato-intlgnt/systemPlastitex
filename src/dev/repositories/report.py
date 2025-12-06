@@ -196,8 +196,8 @@ class ReportRepositorie:
         Stock por Producto - Obtiene el stock de un producto específico o todos.
         Delega a la función de BD sp_get_stock_by_product (nueva función creada).
         """
-        params = {"p_product_id": product_id}
-        # Usa el nombre de la función en minúsculas
+        params = {"prod_id": product_id}
+
         return await ReportRepositorie._execute_sp(
             "sp_get_stock_by_product", params, poolDB
         )
