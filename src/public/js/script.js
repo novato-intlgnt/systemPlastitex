@@ -37,22 +37,16 @@ async function handleLogin(event) {
       }),
     });
 
-    // if (res.redirected) {
-    //     window.location.href = res.url;
-    // }
-    //
-
-    const dataIn = await res.json()
-    if (dataIn.redirect) {
-      window.location.href = dataIn.redirect
+    console.log(res)
+    if (res.redirected) {
+        window.location.href = res.url;
     }
+
 
     if (!res.ok) {
       return showAlert(data.message || "Error al iniciar sesión", "error");
     }
-    showAlert("¡Acceso concedido! Redirigiendo...", "success");
 
-    console.log(res)
   } catch (err) {
     showAlert("Error de conexión con el servidor", "error");
   }
@@ -91,7 +85,7 @@ async function handleRegister(event) {
     });
 
     if (res.redirected) {
-      window.location.href = res.url; // Navegación REAL
+      window.location.href = res.url;
       return;
     }
 
@@ -100,8 +94,6 @@ async function handleRegister(event) {
     if (!res.ok) {
       return showAlert(data.message || "Error al registrarse", "error");
     }
-
-    showAlert("¡Usuario creado correctamente!", "success");
 
     setTimeout(() => {
       document.querySelector('[data-tab="login"]').click();

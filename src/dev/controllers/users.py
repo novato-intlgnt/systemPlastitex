@@ -4,6 +4,8 @@ import pathlib
 from fastapi import HTTPException, status
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 
+from src.dev.utils.security import sign
+
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent.parent
 
 
@@ -56,16 +58,9 @@ class UserController:
                     },
                 )
 
-            # response = RedirectResponse(
-            #     url=f"/user/{auth_user['name']}/dashboard",
-            #     status_code=302,
-            # )
-            response = JSONResponse(
-                content={
-                    "status": "ok",
-                    "status_code": 302,
-                    "redirect": f"user/{auth_user['name']}/dashboard",
-                }
+            response = RedirectResponse(
+                url=f"/user/{auth_user['name']}/dashboard",
+                status_code=302,
             )
 
             response.set_cookie(
@@ -95,6 +90,27 @@ class UserController:
             return FileResponse(
                 path=BASE_DIR / "public" / "dash_aux_almacen.html",
                 media_type="text/html",
+            )
+        except Exception as e:
+            print("Error accessing dashboard:", e)
+            raise HTTPException(status_code=500, detail="Internal server error")
+
+    async def get_token(self, name: str, user: dict):
+        try:
+            if user.get("user") != name:
+                return RedirectResponse(url="/", status_code=302)
+            token = sign(user)
+            return JSONResponse(
+                status_code=status.HTTP_200_OK,
+                content={
+                    "status": "success",
+                    "message": "Login exitoso",
+                    "data": {
+                        "access_token": token,
+                        "token_type": "Bearer",
+                        "fullName": user["name"],
+                    },
+                },
             )
         except Exception as e:
             print("Error accessing dashboard:", e)

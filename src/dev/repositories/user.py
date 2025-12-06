@@ -54,21 +54,24 @@ class UserRepository:
         password = input_data["pass"]
 
         async with poolDB() as session:
-            query = select(User.password, User.role, User.fullname).where(
+            query = select(User.password, User.role, User.fullname, User.id).where(
                 User.username == username
             )
             result = await session.execute(query)
         user = result.first()
-        passHashed = user.password
-        roleUser = user.role
-        fullname = user.fullname
-        if verifyPassHashed(password, passHashed) is False:
+        if verifyPassHashed(password, user.password) is False:
             return {
                 "status": False,
             }
 
-        print(input_data)
-        token = sign({"user": username, "role": roleUser, "name": fullname})
+        token = sign(
+            {
+                "user": username,
+                "role": user.role,
+                "name": user.fullname,
+                "userId": user.id,
+            }
+        )
         print(token)
 
         return {"auth": token, "name": username, "status": True}

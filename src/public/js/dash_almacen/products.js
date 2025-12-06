@@ -67,7 +67,7 @@ new TableModule({
       width: 100, 
       hozAlign: "right",
       formatter: "money",
-      formatterParams: { symbol: "Bs. ", precision: 2 }
+      formatterParams: { symbol: "$/. ", precision: 2 }
     },
     { 
       title: "P. Compra", 
@@ -75,7 +75,7 @@ new TableModule({
       width: 100, 
       hozAlign: "right",
       formatter: "money",
-      formatterParams: { symbol: "Bs. ", precision: 2 }
+      formatterParams: { symbol: "$/. ", precision: 2 }
     },
   ],
 

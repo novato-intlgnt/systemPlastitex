@@ -8,11 +8,10 @@ closeBtn.addEventListener('click', () => {
   sidebar.classList.toggle('open')
   songInput.value = ''
   artistInput.value = ''
-  menuBtnChange()// calling the function(optional)
+  menuBtnChange()
 })
 
 
-// following are the code to change sidebar button(optional)
 function menuBtnChange () {
   if (sidebar.classList.contains('open')) {
     closeBtn.classList.replace('fi-rr-menu-burger', 'fi-rr-bars-staggered')// replacing the iocns class
@@ -22,14 +21,39 @@ function menuBtnChange () {
   }
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+function checkAuth() {
+  const token = localStorage.getItem('access_token')
+  if (!token) {
+    window.location.href = '/'
+    return false
+  }
+  return true
+}
+
+function logout() {
+  localStorage.removeItem('access_token')
+  window.location.href = '/'
+}
+
+window.logout = logout
+
+document.addEventListener('DOMContentLoaded', async function () {
   const path = window.location.pathname
   const parts = path.split('/')
   const userName = parts[2]
 
-  // Set the userName in the html
+  const url = window.location.origin
+  const res = await fetch(`${url}/user/${userName}`)
+  const data = await res.json()
+
   const nameHtml = document.getElementById('user')
   if (userName) {
-    nameHtml.innerText = userName
+    nameHtml.innerText = data.data.fullName
   }
+
+  if (data.data && data.data.access_token) {
+    localStorage.setItem("access_token", data.data.access_token);
+  }
+
+  if (!checkAuth()) return
 })

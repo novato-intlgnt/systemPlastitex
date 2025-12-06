@@ -7,12 +7,24 @@
     <link rel="stylesheet" href="/css/dashboard.css" />
     <link rel="stylesheet" href="/css/dashboard-common.css" />
     <!-- Icons -->
-    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
-    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+    <link
+      rel="stylesheet"
+      href="https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css"
+    />
     <!-- Tabulator -->
-    <link href="https://unpkg.com/tabulator-tables@6.2.5/dist/css/tabulator_midnight.min.css" rel="stylesheet">
+    <link
+      href="https://unpkg.com/tabulator-tables@6.2.5/dist/css/tabulator_midnight.min.css"
+      rel="stylesheet"
+    />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://unpkg.com/tabulator-tables@6.2.5/dist/js/tabulator.min.js" defer></script>
+    <script
+      src="https://unpkg.com/tabulator-tables@6.2.5/dist/js/tabulator.min.js"
+      defer
+    ></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
     <script src="/js/dashboard.js" defer></script>
     <!-- Módulos JS -->
@@ -29,7 +41,7 @@
     <!-- ================================================================== -->
     <div class="sidebar">
       <div class="logo-details">
-        <img src="/assets/images/logo.jpg" class="logo">
+        <img src="/assets/images/logo.jpg" class="logo" />
         <div class="logo_name">PlastiTex</div>
         <i class="fi fi-rr-menu-burger" id="btn"></i>
       </div>
@@ -100,7 +112,12 @@
       </div>
 
       <div class="search-box">
-        <input type="text" id="client-search" class="search-input" placeholder="Buscar cliente..." />
+        <input
+          type="text"
+          id="client-search"
+          class="search-input"
+          placeholder="Buscar cliente..."
+        />
       </div>
 
       <div id="clients-table" class="data-table"></div>
@@ -108,28 +125,34 @@
       <!-- Modal Cliente -->
       <div id="client-modal" class="modal">
         <div class="modal-content">
-          <span class="modal-close" onclick="document.getElementById('client-modal').style.display='none'">&times;</span>
+          <span
+            class="modal-close"
+            onclick="document.getElementById('client-modal').style.display='none'"
+            >&times;</span
+          >
           <h3 id="modal-title-client">Nuevo Cliente</h3>
           <form id="client-form">
-            <input type="hidden" name="id" id="client-id">
+            <input type="hidden" name="id" id="client-id" />
             <div class="form-group">
               <label for="client-name">Nombre</label>
-              <input type="text" name="name" id="client-name" required>
-            </div>
-            <div class="form-group">
-              <label for="client-email">Email</label>
-              <input type="email" name="email" id="client-email" required>
+              <input type="text" name="name" id="client-name" required />
             </div>
             <div class="form-group">
               <label for="client-phone">Teléfono</label>
-              <input type="text" name="phone" id="client-phone">
+              <input type="text" name="phone" id="client-phone" />
             </div>
             <div class="form-group">
               <label for="client-address">Dirección</label>
-              <input type="text" name="address" id="client-address">
+              <input type="text" name="address" id="client-address" />
             </div>
             <div class="modal-actions">
-              <button type="button" id="btn-cancel-client" class="btn-secondary">Cancelar</button>
+              <button
+                type="button"
+                id="btn-cancel-client"
+                class="btn-secondary"
+              >
+                Cancelar
+              </button>
               <button type="submit" class="btn-primary">Guardar</button>
             </div>
           </form>
@@ -149,7 +172,12 @@
       </div>
 
       <div class="search-box">
-        <input type="text" id="product-search" class="search-input" placeholder="Buscar producto..." />
+        <input
+          type="text"
+          id="product-search"
+          class="search-input"
+          placeholder="Buscar producto..."
+        />
       </div>
 
       <div id="products-table" class="data-table"></div>
@@ -157,18 +185,26 @@
       <!-- Modal Producto -->
       <div id="product-modal" class="modal">
         <div class="modal-content">
-          <span class="modal-close" onclick="document.getElementById('product-modal').style.display='none'">&times;</span>
+          <span
+            class="modal-close"
+            onclick="document.getElementById('product-modal').style.display='none'"
+            >&times;</span
+          >
           <h3 id="modal-title-product">Nuevo Producto</h3>
           <form id="product-form">
-            <input type="hidden" name="id" id="product-id">
+            <input type="hidden" name="id" id="product-id" />
             <div class="form-group">
               <label for="product-name">Nombre</label>
-              <input type="text" name="name" id="product-name" required>
+              <input type="text" name="name" id="product-name" required />
             </div>
             <div class="form-row">
               <div class="form-group">
                 <label for="product-category">Categoría</label>
-                <select name="category_id" id="product-category" required></select>
+                <select
+                  name="category_id"
+                  id="product-category"
+                  required
+                ></select>
               </div>
               <div class="form-group">
                 <label for="product-unit">Unidad</label>
@@ -177,20 +213,45 @@
             </div>
             <div class="form-group">
               <label for="product-stock">Stock Inicial</label>
-              <input type="number" name="stock" id="product-stock" min="0" value="0" required>
+              <input
+                type="number"
+                name="stock"
+                id="product-stock"
+                min="0"
+                value="0"
+                required
+              />
             </div>
             <div class="form-row">
               <div class="form-group">
                 <label for="product-sale">Precio Venta (Bs.)</label>
-                <input type="number" name="sale_price" step="0.01" id="product-sale" required>
+                <input
+                  type="number"
+                  name="sale_price"
+                  step="0.01"
+                  id="product-sale"
+                  required
+                />
               </div>
               <div class="form-group">
                 <label for="product-purchase">Precio Compra (Bs.)</label>
-                <input type="number" name="purchase_price" step="0.01" id="product-purchase" required>
+                <input
+                  type="number"
+                  name="purchase_price"
+                  step="0.01"
+                  id="product-purchase"
+                  required
+                />
               </div>
             </div>
             <div class="modal-actions">
-              <button type="button" id="btn-cancel-product" class="btn-secondary">Cancelar</button>
+              <button
+                type="button"
+                id="btn-cancel-product"
+                class="btn-secondary"
+              >
+                Cancelar
+              </button>
               <button type="submit" class="btn-primary">Guardar</button>
             </div>
           </form>
@@ -216,7 +277,9 @@
         <div class="items-header">
           <h4>Productos de la Nota</h4>
           <div>
-            <span id="selected-note-info" class="selected-note-info">Seleccione una nota</span>
+            <span id="selected-note-info" class="selected-note-info"
+              >Seleccione una nota</span
+            >
             <button id="btn-add-item" class="btn-primary" disabled>
               <i class="fi fi-rr-plus"></i> Agregar Producto
             </button>
@@ -228,7 +291,11 @@
       <!-- Modal Nueva Nota de Ingreso -->
       <div id="entry-note-modal" class="modal">
         <div class="modal-content">
-          <span class="modal-close" onclick="document.getElementById('entry-note-modal').style.display='none'">&times;</span>
+          <span
+            class="modal-close"
+            onclick="document.getElementById('entry-note-modal').style.display='none'"
+            >&times;</span
+          >
           <h3 id="entry-note-modal-title">Nueva Nota de Ingreso</h3>
           <form id="entry-note-form">
             <div class="form-group">
@@ -239,10 +306,21 @@
             </div>
             <div class="form-group">
               <label for="entry-reference">Referencia (Opcional)</label>
-              <input type="text" name="reference" id="entry-reference" placeholder="Ej: Factura #123">
+              <input
+                type="text"
+                name="reference"
+                id="entry-reference"
+                placeholder="Ej: Factura #123"
+              />
             </div>
             <div class="modal-actions">
-              <button type="button" id="btn-cancel-entry-note" class="btn-secondary">Cancelar</button>
+              <button
+                type="button"
+                id="btn-cancel-entry-note"
+                class="btn-secondary"
+              >
+                Cancelar
+              </button>
               <button type="submit" class="btn-primary">Crear Nota</button>
             </div>
           </form>
@@ -252,7 +330,11 @@
       <!-- Modal Agregar Item -->
       <div id="entry-item-modal" class="modal">
         <div class="modal-content">
-          <span class="modal-close" onclick="document.getElementById('entry-item-modal').style.display='none'">&times;</span>
+          <span
+            class="modal-close"
+            onclick="document.getElementById('entry-item-modal').style.display='none'"
+            >&times;</span
+          >
           <h3 id="entry-item-modal-title">Agregar Producto</h3>
           <form id="entry-item-form">
             <div class="form-group">
@@ -263,10 +345,23 @@
             </div>
             <div class="form-group">
               <label for="item-quantity">Cantidad</label>
-              <input type="number" name="quantity" id="item-quantity" min="1" value="1" required>
+              <input
+                type="number"
+                name="quantity"
+                id="item-quantity"
+                min="1"
+                value="1"
+                required
+              />
             </div>
             <div class="modal-actions">
-              <button type="button" id="btn-cancel-entry-item" class="btn-secondary">Cancelar</button>
+              <button
+                type="button"
+                id="btn-cancel-entry-item"
+                class="btn-secondary"
+              >
+                Cancelar
+              </button>
               <button type="submit" class="btn-primary">Agregar</button>
             </div>
           </form>
@@ -295,7 +390,12 @@
         </div>
         <div class="filter-group">
           <label>Buscar</label>
-          <input type="text" id="stock-search" placeholder="Buscar..." class="search-input">
+          <input
+            type="text"
+            id="stock-search"
+            placeholder="Buscar..."
+            class="search-input"
+          />
         </div>
       </div>
 
@@ -323,11 +423,11 @@
         </div>
         <div class="filter-group">
           <label>Fecha Inicio</label>
-          <input type="date" id="kardex-start-date">
+          <input type="date" id="kardex-start-date" />
         </div>
         <div class="filter-group">
           <label>Fecha Fin</label>
-          <input type="date" id="kardex-end-date">
+          <input type="date" id="kardex-end-date" />
         </div>
         <div class="filter-actions">
           <button id="btn-filter-kardex" class="btn-primary">
@@ -338,7 +438,7 @@
       </div>
 
       <!-- Info del producto -->
-      <div id="kardex-product-info" style="padding: 0 25px;">
+      <div id="kardex-product-info" style="padding: 0 25px">
         <p class="text-muted">Seleccione un producto para ver su kardex</p>
       </div>
 
@@ -366,7 +466,9 @@
         <div class="items-header">
           <h4>Productos de la Nota</h4>
           <div>
-            <span id="selected-exit-note-info" class="selected-note-info">Seleccione una nota</span>
+            <span id="selected-exit-note-info" class="selected-note-info"
+              >Seleccione una nota</span
+            >
             <button id="btn-add-exit-item" class="btn-primary" disabled>
               <i class="fi fi-rr-plus"></i> Agregar Producto
             </button>
@@ -378,7 +480,11 @@
       <!-- Modal Nueva Nota de Salida -->
       <div id="exit-note-modal" class="modal">
         <div class="modal-content">
-          <span class="modal-close" onclick="document.getElementById('exit-note-modal').style.display='none'">&times;</span>
+          <span
+            class="modal-close"
+            onclick="document.getElementById('exit-note-modal').style.display='none'"
+            >&times;</span
+          >
           <h3 id="exit-note-modal-title">Nueva Nota de Salida</h3>
           <form id="exit-note-form">
             <div class="form-group">
@@ -390,15 +496,33 @@
             <div class="form-row">
               <div class="form-group">
                 <label for="exit-total">Total (Bs.)</label>
-                <input type="number" name="total" id="exit-total" step="0.01" min="0" value="0">
+                <input
+                  type="number"
+                  name="total"
+                  id="exit-total"
+                  step="0.01"
+                  min="0"
+                  value="0"
+                />
               </div>
               <div class="form-group">
                 <label for="exit-reference">Referencia</label>
-                <input type="text" name="reference" id="exit-reference" placeholder="Ej: Venta #123">
+                <input
+                  type="text"
+                  name="reference"
+                  id="exit-reference"
+                  placeholder="Ej: Venta #123"
+                />
               </div>
             </div>
             <div class="modal-actions">
-              <button type="button" id="btn-cancel-exit-note" class="btn-secondary">Cancelar</button>
+              <button
+                type="button"
+                id="btn-cancel-exit-note"
+                class="btn-secondary"
+              >
+                Cancelar
+              </button>
               <button type="submit" class="btn-primary">Crear Nota</button>
             </div>
           </form>
@@ -408,7 +532,11 @@
       <!-- Modal Agregar Item Salida -->
       <div id="exit-item-modal" class="modal">
         <div class="modal-content">
-          <span class="modal-close" onclick="document.getElementById('exit-item-modal').style.display='none'">&times;</span>
+          <span
+            class="modal-close"
+            onclick="document.getElementById('exit-item-modal').style.display='none'"
+            >&times;</span
+          >
           <h3 id="exit-item-modal-title">Agregar Producto</h3>
           <form id="exit-item-form">
             <div class="form-group">
@@ -419,13 +547,27 @@
             </div>
             <div class="form-group">
               <label for="exit-item-quantity">Cantidad</label>
-              <input type="number" name="quantity" id="exit-item-quantity" min="1" value="1" required>
+              <input
+                type="number"
+                name="quantity"
+                id="exit-item-quantity"
+                min="1"
+                value="1"
+                required
+              />
             </div>
-            <p class="text-muted" style="font-size: 12px;">
-              <i class="fi fi-rr-info"></i> Se validará el stock disponible antes de agregar.
+            <p class="text-muted" style="font-size: 12px">
+              <i class="fi fi-rr-info"></i> Se validará el stock disponible
+              antes de agregar.
             </p>
             <div class="modal-actions">
-              <button type="button" id="btn-cancel-exit-item" class="btn-secondary">Cancelar</button>
+              <button
+                type="button"
+                id="btn-cancel-exit-item"
+                class="btn-secondary"
+              >
+                Cancelar
+              </button>
               <button type="submit" class="btn-primary">Agregar</button>
             </div>
           </form>

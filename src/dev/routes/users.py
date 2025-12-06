@@ -30,3 +30,12 @@ async def user_signin(data: dict):
 )
 async def access_dashboard(name: str, user=Depends(only_user)):
     return await user_controller.access(name, user)
+
+
+@userRouter.get(
+    "/{name}/",
+    summary="Get user's token",
+    response_class=HTMLResponse,
+)
+async def get_token(name: str, user=Depends(only_user)):
+    return await user_controller.get_token(name, user)

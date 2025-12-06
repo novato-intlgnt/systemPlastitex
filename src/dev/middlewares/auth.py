@@ -1,15 +1,29 @@
+from typing import Optional
+
 import jwt
-from fastapi import HTTPException, Request, Depends
+from fastapi import Depends, HTTPException, Request
 from fastapi.responses import RedirectResponse
+from fastapi.security import OAuth2PasswordBearer
 
 from src.dev.utils.security import decode
 
 
-async def only_user(request: Request):
-    token = request.cookies.get("user")
+class NewOauth2(OAuth2PasswordBearer):
+    async def __call__(self, request: Request) -> Optional[str]:
+        try:
+            return await super().__call__(request)
+        except Exception:
+            return None
+
+
+oauth2_scheme = NewOauth2(tokenUrl="/user/auth")
+
+
+async def only_user(request: Request, bearer: str | None = Depends(oauth2_scheme)):
+    cookie_token = request.cookies.get("user")
+    token = cookie_token if cookie_token else bearer
     if not token:
         raise HTTPException(status_code=401, detail="Missing token")
-
     try:
         decoded = decode(token)
         return decoded
@@ -24,26 +38,25 @@ async def require_admin(request: Request):
     Middleware que requiere rol admin
     """
     user = await only_user(request)
-    
+
     if isinstance(user, RedirectResponse):
         return user
-    
+
     if user.get("role") != "admin":
-        raise HTTPException(
-            status_code=403, 
-            detail="Se requiere rol de administrador"
-        )
+        raise HTTPException(status_code=403, detail="Se requiere rol de administrador")
     return user
+
+
 def require_role(*allowed_roles):
     """
     Middleware que requiere uno de los roles especificados
     Uso: Depends(require_role("admin", "auxiliar_compra"))
     """
+
     async def check_role(user: dict = Depends(only_user)):
         if user.get("role") not in allowed_roles:
-            raise HTTPException(
-                status_code=403,
-                detail="Acceso denegado"
-            )
+            raise HTTPException(status_code=403, detail="Acceso denegado")
         return user
+
     return check_role
+
