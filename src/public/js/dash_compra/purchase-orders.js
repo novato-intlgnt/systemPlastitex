@@ -45,7 +45,7 @@ function initTable() {
         width: 120, 
         hozAlign: "right",
         formatter: "money",
-        formatterParams: { symbol: "Bs. ", precision: 2 }
+        formatterParams: { symbol: "$/. ", precision: 2 }
       },
       { 
         title: "Estado", 
@@ -153,16 +153,16 @@ async function viewDetails(orderId) {
           <p><strong>Orden #:</strong> ${order.id}</p>
           <p><strong>Proveedor:</strong> ${order.supplier_name || 'N/A'}</p>
           <p><strong>Fecha:</strong> ${new Date(order.date).toLocaleDateString("es-BO")}</p>
-          <p><strong>Total:</strong> Bs. ${parseFloat(order.total || 0).toFixed(2)}</p>
+          <p><strong>Total:</strong> $/. ${parseFloat(order.total || 0).toFixed(2)}</p>
           <p><strong>Estado:</strong> ${order.status || 'N/A'}</p>
         </div>
-        <h4>Detalles de la orden:</h4>
+        <h4 style="color: white"><strong>Lista de Productos</strong></h4>
         <div class="detail-items">
           ${order.details?.length > 0 ? order.details.map(d => `
             <div class="detail-item">
               <span>${d.product_name}</span>
-              <span>${d.quantity} x Bs. ${parseFloat(d.unit_price || 0).toFixed(2)}</span>
-              <span><strong>Bs. ${(d.quantity * (d.unit_price || 0)).toFixed(2)}</strong></span>
+              <span>${d.quantity} x $/. ${parseFloat(d.unit_price || 0).toFixed(2)}</span>
+              <span><strong>$/. ${(d.quantity * (d.unit_price || 0)).toFixed(2)}</strong></span>
             </div>
           `).join("") : '<p>No hay detalles registrados</p>'}
         </div>

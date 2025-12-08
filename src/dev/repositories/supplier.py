@@ -96,14 +96,17 @@ class SupplierRepository:
 
                 for key, value in new_data.items():
                     if hasattr(supplier, key):
+                        if key == "id":
+                            continue
                         setattr(supplier, key, value)
 
                 await session.commit()
                 await session.refresh(supplier)
 
                 return {"status": True}
-            except SQLAlchemyError:
+            except Exception as e:
                 await session.rollback()
+                print("❌ ERROR EXACTO:", e)
                 raise HTTPException(500, "Error en la base de datos")
 
     @staticmethod

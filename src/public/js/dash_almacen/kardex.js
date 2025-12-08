@@ -13,14 +13,15 @@ function initTable() {
     data: [],
     layout: "fitColumns",
     pagination: "local",
-    paginationSize: 20,
-    height: "65vh",
+    paginationSize: 10,
+    height: "50vh",
     placeholder: "Seleccione un producto para ver su kardex",
     columns: [
       { 
         title: "Fecha", 
         field: "movement_date", 
         width: 110,
+        hozAlign: "center",
         formatter: (cell) => {
           const date = new Date(cell.getValue());
           return date.toLocaleDateString("es-BO");
@@ -34,8 +35,8 @@ function initTable() {
         formatter: (cell) => {
           const type = cell.getValue();
           const isEntry = type?.toUpperCase() === "ENTRADA";
-          const color = isEntry ? "#28a745" : "#f05454";
-          const icon = isEntry ? "↑" : "↓";
+          const color = isEntry ? "#f05454" : "#28a745";
+          const icon = isEntry ? "↓" : "↑";
           return `<span style="color: ${color}; font-weight: bold;">${icon} ${type}</span>`;
         }
       },
@@ -52,7 +53,7 @@ function initTable() {
       },
       { 
         title: "Balance", 
-        field: "balance", 
+        field: "running_balance", 
         width: 100, 
         hozAlign: "right",
         formatter: (cell) => {
@@ -62,7 +63,7 @@ function initTable() {
           return `<span style="color: ${color};">${sign}${value}</span>`;
         }
       },
-      { title: "Proveedor/Cliente", field: "supplier_customer_name", minWidth: 150 },
+      { title: "Proveedor/Cliente", field: "entity_name", minWidth: 150 },
       { title: "Tipo Entidad", field: "entity_type", width: 110, hozAlign: "center" },
     ],
   });

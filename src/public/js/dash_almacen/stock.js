@@ -14,7 +14,7 @@ function initTable() {
     layout: "fitColumns",
     pagination: "local",
     paginationSize: 20,
-    height: "70vh",
+    height: "65vh",
     placeholder: "No hay datos de stock",
     columns: [
       { title: "ID", field: "product_id", width: 60, hozAlign: "center" },

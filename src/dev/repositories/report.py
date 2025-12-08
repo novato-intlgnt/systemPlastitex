@@ -1,3 +1,4 @@
+from datetime import date, datetime
 from typing import Any, Optional
 
 from sqlalchemy import select, text
@@ -33,22 +34,29 @@ class ReportRepositorie:
         Returns:
             Lista de diccionarios con los resultados.
         """
-        # Construir la lista de parámetros para la sentencia SELECT.
-        # En PG, las funciones RETURNS TABLE se llaman con SELECT * FROM function_name(...)
         param_placeholders = ", ".join([f":{key}" for key in params.keys()])
         sql_statement = text(f"SELECT * FROM {sp_name}({param_placeholders})")
 
         async with poolDB() as session:
-            # PostgreSQL no siempre usa `execute` con funciones de retorno,
-            # pero el método `execute` de SQLAlchemy soporta esta sintaxis.
             result = await session.execute(sql_statement, params)
             rows = result.fetchall()
 
-            # Convertir las filas a lista de diccionarios
-            if rows:
-                columns = result.keys()
-                return [dict(zip(columns, row)) for row in rows]
-            return []
+            if not rows:
+                return []
+
+            columns = result.keys()
+            final_rows = []
+
+            for row in rows:
+                row_dict = dict(zip(columns, row))
+
+                for key, value in row_dict.items():
+                    if hasattr(value, "isoformat"):
+                        row_dict[key] = value.isoformat()
+
+                final_rows.append(row_dict)
+
+            return final_rows
 
     # Se mantiene el método auxiliar _execute_dynamic_query ya que no fue solicitado modificarlo,
     # aunque no se usará en los métodos principales de reporte.
@@ -83,8 +91,8 @@ class ReportRepositorie:
         """
         params = {
             "p_product_id": product_id,
-            "p_start_date": start_date,
-            "p_end_date": end_date,
+            "p_start_date": datetime.strptime(start_date, "%Y-%m-%d").date(),
+            "p_end_date": datetime.strptime(end_date, "%Y-%m-%d").date(),
         }
         # Usa el nombre de la función en minúsculas
         return await ReportRepositorie._execute_sp(
@@ -117,10 +125,19 @@ class ReportRepositorie:
         R3. Historial de Compras - Obtiene las órdenes de compra por proveedor.
         Delega a la función de BD sp_get_purchase_history.
         """
+
+        def to_date(value: Optional[str]) -> Optional[date]:
+            if value is None:
+                return None
+            return datetime.strptime(value, "%Y-%m-%d").date()
+
+        start_date_parsed = to_date(start_date)
+        end_date_parsed = to_date(end_date)
+
         params = {
             "p_supplier_id": supplier_id,
-            "p_start_date": start_date,
-            "p_end_date": end_date,
+            "p_start_date": start_date_parsed,
+            "p_end_date": end_date_parsed,
         }
         # Usa el nombre de la función en minúsculas
         return await ReportRepositorie._execute_sp(
@@ -182,6 +199,7 @@ class ReportRepositorie:
         Redirigido al método principal que usa el SP, ya que el SP ahora soporta
         parámetros opcionales.
         """
+
         # Redirigido al método principal que usa el SP.
         return await ReportRepositorie.get_purchase_history(
             supplier_id, start_date, end_date, poolDB
@@ -211,14 +229,23 @@ class ReportRepositorie:
     ) -> list[dict]:
         """
         Kardex por Producto - Obtiene los movimientos de un producto específico.
-        Delega a la función de BD sp_get_kardex_fisico.
+        Delegando a la función de BD sp_get_kardex_fisico.
         """
+
+        def to_date(value: Optional[str]) -> Optional[date]:
+            if value is None:
+                return None
+            return datetime.strptime(value, "%Y-%m-%d").date()
+
+        start_date_parsed = to_date(start_date)
+        end_date_parsed = to_date(end_date)
+
         params = {
             "p_product_id": product_id,
-            "p_start_date": start_date,
-            "p_end_date": end_date,
+            "p_start_date": start_date_parsed,
+            "p_end_date": end_date_parsed,
         }
-        # Usa el nombre de la función en minúsculas
+
         return await ReportRepositorie._execute_sp(
             "sp_get_kardex_fisico", params, poolDB
         )

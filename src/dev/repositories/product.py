@@ -18,17 +18,23 @@ class ProductRepository:
     async def check(
         data: dict, poolDB: async_sessionmaker[AsyncSession] = async_session_maker
     ):
-        name = data["name"]
-        category_id = data["category_id"]
-
         async with poolDB() as session:
-            query = select(Product).where(
-                (Product.name == name) & (Product.category_id == category_id)
-            )
-            result = await session.execute(query)
+            try:
+                name = data["name"]
+                category_id = int(data["category_id"])
 
-        product = result.first()
-        return product is not None
+                query = select(Product).where(
+                    (Product.name == name) & (Product.category_id == category_id)
+                )
+                result = await session.execute(query)
+
+                product = result.first()
+                return product is not None
+
+            except Exception as e:
+                await session.rollback()
+                print("❌ ERROR EXACTO:", e)
+                raise HTTPException(500, "Error en la base de datos")
 
     # GET ALL: Lista de productos con joins (nombre categoría/unidad)
     @staticmethod
@@ -67,7 +73,6 @@ class ProductRepository:
         prod_id: int, poolDB: async_sessionmaker[AsyncSession] = async_session_maker
     ):
         async with poolDB() as session:
-
             query = (
                 select(Product, Category.name, Unit.name)
                 .join(Category, Product.category_id == Category.id)
@@ -99,28 +104,34 @@ class ProductRepository:
         product_data: dict,
         poolDB: async_sessionmaker[AsyncSession] = async_session_maker,
     ):
-        try:
-            new_product = Product(
-                name=product_data["name"],
-                category_id=product_data["category_id"],
-                unit_id=product_data["unit_id"],
-                stock=product_data.get("stock", 0),
-                sale_price=product_data.get("sale_price", 0),
-                purchase_price=product_data.get("purchase_price", 0),
-            )
+        async with poolDB() as session:
+            try:
+                print(product_data)
+                new_product = Product(
+                    name=product_data["name"],
+                    category_id=int(product_data["category_id"]),
+                    unit_id=int(product_data["unit_id"]),
+                    stock=int(product_data.get("stock", 0)),
+                    sale_price=float(product_data.get("sale_price", 0)),
+                    purchase_price=float(product_data.get("purchase_price", 0)),
+                )
 
-            async with poolDB() as session:
                 session.add(new_product)
                 await session.commit()
                 await session.refresh(new_product)
 
                 return {"status": True}
 
-        except IntegrityError:
-            raise HTTPException(400, "El producto ya existe")
+            except Exception as e:
+                await session.rollback()
+                print("❌ ERROR EXACTO:", e)
+                raise HTTPException(500, "Error en la base de datos")
 
-        except SQLAlchemyError:
-            raise HTTPException(500, "Error en la base de datos")
+            except IntegrityError:
+                raise HTTPException(400, "El producto ya existe")
+
+            except SQLAlchemyError:
+                raise HTTPException(500, "Error en la base de datos")
 
     # MODIFY: Modificar producto
     @staticmethod
@@ -136,8 +147,16 @@ class ProductRepository:
                 if not product:
                     raise HTTPException(404, "El producto no existe")
 
+                colums_int = ["id", "category_id", "unit_id", "stock"]
+                colums_float = ["purchase_price", "sale_price"]
                 for key, value in new_data.items():
                     if hasattr(product, key):
+                        if key in colums_int:
+                            setattr(product, key, int(value))
+                            continue
+                        if key in colums_float:
+                            setattr(product, key, float(value))
+                            continue
                         setattr(product, key, value)
 
                 await session.commit()

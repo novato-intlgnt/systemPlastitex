@@ -129,6 +129,7 @@ class ReportController:
             data = await self.report_repositorie.get_purchase_history(
                 supplier_id, start_date, end_date
             )
+
             return JSONResponse(
                 status_code=200,
                 content={
@@ -280,12 +281,26 @@ class ReportController:
             data = await self.report_repositorie.get_purchase_history_dynamic(
                 supplier_id, start_date, end_date
             )
+
+            print(data)
+            result_list = []
+            for order in data:
+                result_list.append(
+                    {
+                        "order_id": order["order_id"],
+                        "order_date": order["order_date"],
+                        "supplier_name": order["supplier_name"],
+                        "total": float(order["total"]) if order["total"] else None,
+                        "status": order["status"],
+                        "created_by": order["username"],
+                    }
+                )
             return JSONResponse(
                 status_code=200,
                 content={
                     "status": "success",
-                    "data": data,
-                    "count": len(data),
+                    "data": result_list,
+                    "count": len(result_list),
                     "filters": {
                         "supplier_id": supplier_id,
                         "start_date": start_date,
@@ -320,7 +335,6 @@ class ReportController:
 
         try:
             data = await self.report_repositorie.get_stock_by_product(product_id)
-            print(data)
             result_list = []
             for product in data:
                 result_list.append(

@@ -7,19 +7,43 @@
     <link rel="stylesheet" href="/css/dashboard.css" />
     <link rel="stylesheet" href="/css/dashboard-common.css" />
     <!-- Icons -->
-    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
-    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+    <link
+      rel="stylesheet"
+      href="https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css"
+    />
     <!-- Tabulator -->
-    <link href="https://unpkg.com/tabulator-tables@6.2.5/dist/css/tabulator_midnight.min.css" rel="stylesheet">
+    <link
+      href="https://unpkg.com/tabulator-tables@6.2.5/dist/css/tabulator_midnight.min.css"
+      rel="stylesheet"
+    />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://unpkg.com/tabulator-tables@6.2.5/dist/js/tabulator.min.js" defer></script>
+    <script
+      src="https://unpkg.com/tabulator-tables@6.2.5/dist/js/tabulator.min.js"
+      defer
+    ></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
     <script src="/js/dashboard.js" defer></script>
     <!-- Módulos JS -->
     <script type="module" src="/js/dash_compra/suppliers.js" defer></script>
-    <script type="module" src="/js/dash_compra/products-stock.js" defer></script>
-    <script type="module" src="/js/dash_compra/purchase-history.js" defer></script>
-    <script type="module" src="/js/dash_compra/purchase-orders.js" defer></script>
+    <script
+      type="module"
+      src="/js/dash_compra/products-stock.js"
+      defer
+    ></script>
+    <script
+      type="module"
+      src="/js/dash_compra/purchase-history.js"
+      defer
+    ></script>
+    <script
+      type="module"
+      src="/js/dash_compra/purchase-orders.js"
+      defer
+    ></script>
   </head>
   <body>
     <!-- ================================================================== -->
@@ -27,7 +51,7 @@
     <!-- ================================================================== -->
     <div class="sidebar">
       <div class="logo-details">
-        <img src="/assets/images/logo.jpg" class="logo">
+        <img src="/assets/images/logo.jpg" class="logo" />
         <div class="logo_name">PlastiTex</div>
         <i class="fi fi-rr-menu-burger" id="btn"></i>
       </div>
@@ -84,7 +108,12 @@
       </div>
 
       <div class="search-box">
-        <input type="text" id="supplier-search" class="search-input" placeholder="Buscar proveedor..." />
+        <input
+          type="text"
+          id="supplier-search"
+          class="search-input"
+          placeholder="Buscar proveedor..."
+        />
       </div>
 
       <div id="supplier-table" class="data-table"></div>
@@ -92,24 +121,35 @@
       <!-- Modal Proveedor -->
       <div id="supplier-modal" class="modal">
         <div class="modal-content">
-          <span class="modal-close" onclick="document.getElementById('supplier-modal').style.display='none'">&times;</span>
+          <span
+            class="modal-close"
+            onclick="document.getElementById('supplier-modal').style.display='none'"
+            >&times;</span
+          >
           <h3 id="modal-title">Nuevo Proveedor</h3>
           <form id="supplier-form">
-            <input type="hidden" name="id" id="supplier-id">
+            <input type="hidden" name="id" id="supplier-id" />
             <div class="form-group">
               <label for="supplier-name">Nombre</label>
-              <input type="text" name="name" id="supplier-name" required>
+              <input type="text" name="name" id="supplier-name" required />
             </div>
             <div class="form-group">
               <label for="supplier-phone">Teléfono</label>
-              <input type="text" name="phone" id="supplier-phone" required>
+              <input type="text" name="phone" id="supplier-phone" required />
             </div>
             <div class="form-group">
               <label for="supplier-address">Dirección</label>
-              <input type="text" name="address" id="supplier-address" required>
+              <input
+                type="text"
+                name="address"
+                id="supplier-address"
+                required
+              />
             </div>
             <div class="modal-actions">
-              <button type="button" id="btn-cancel" class="btn-secondary">Cancelar</button>
+              <button type="button" id="btn-cancel" class="btn-secondary">
+                Cancelar
+              </button>
               <button type="submit" class="btn-primary">Guardar</button>
             </div>
           </form>
@@ -123,22 +163,37 @@
     <section id="products-section" class="home-section">
       <div class="section-header">
         <h2>Productos y Stock</h2>
-        <button id="btn-refresh-products" class="btn-icon" onclick="location.reload()">
+        <button
+          id="btn-refresh-products"
+          class="btn-icon"
+          onclick="location.reload()"
+        >
           <i class="fi fi-rr-refresh"></i> Actualizar
         </button>
       </div>
 
       <div class="search-box">
-        <input type="text" id="products-stock-search" class="search-input" placeholder="Buscar producto..." />
+        <input
+          type="text"
+          id="products-stock-search"
+          class="search-input"
+          placeholder="Buscar producto..."
+        />
       </div>
 
       <!-- Alerta de bajo stock -->
       <div class="filters-box">
         <div class="filter-group">
           <label>Umbral bajo stock</label>
-          <input type="number" id="low-stock-threshold" value="10" min="1" style="width: 80px;">
+          <input
+            type="number"
+            id="low-stock-threshold"
+            value="10"
+            min="1"
+            style="width: 80px"
+          />
         </div>
-        <div id="low-stock-list" class="low-stock-list" style="flex: 1;"></div>
+        <div id="low-stock-list" class="low-stock-list" style="flex: 1"></div>
       </div>
 
       <div id="products-stock-table" class="data-table"></div>
@@ -162,11 +217,11 @@
         </div>
         <div class="filter-group">
           <label>Fecha Inicio</label>
-          <input type="date" id="filter-start-date">
+          <input type="date" id="filter-start-date" />
         </div>
         <div class="filter-group">
           <label>Fecha Fin</label>
-          <input type="date" id="filter-end-date">
+          <input type="date" id="filter-end-date" />
         </div>
         <div class="filter-actions">
           <button id="btn-filter-history" class="btn-primary">
@@ -194,7 +249,12 @@
       </div>
 
       <div class="search-box">
-        <input type="text" id="order-search" class="search-input" placeholder="Buscar por proveedor..." />
+        <input
+          type="text"
+          id="order-search"
+          class="search-input"
+          placeholder="Buscar por proveedor..."
+        />
       </div>
 
       <div id="purchase-orders-table" class="data-table"></div>
@@ -202,7 +262,11 @@
       <!-- Modal Orden de Compra -->
       <div id="order-modal" class="modal">
         <div class="modal-content">
-          <span class="modal-close" onclick="document.getElementById('order-modal').style.display='none'">&times;</span>
+          <span
+            class="modal-close"
+            onclick="document.getElementById('order-modal').style.display='none'"
+            >&times;</span
+          >
           <h3 id="order-modal-title">Nueva Orden de Compra</h3>
           <form id="order-form">
             <div class="form-group">
@@ -213,8 +277,15 @@
             </div>
             <div class="form-row">
               <div class="form-group">
-                <label for="order-total">Total (Bs.)</label>
-                <input type="number" name="total" id="order-total" step="0.01" min="0" value="0">
+                <label for="order-total">Total ($/.)</label>
+                <input
+                  type="number"
+                  name="total"
+                  id="order-total"
+                  step="0.01"
+                  min="0"
+                  value="0"
+                />
               </div>
               <div class="form-group">
                 <label for="order-status">Estado</label>
@@ -227,7 +298,9 @@
               </div>
             </div>
             <div class="modal-actions">
-              <button type="button" id="btn-cancel-order" class="btn-secondary">Cancelar</button>
+              <button type="button" id="btn-cancel-order" class="btn-secondary">
+                Cancelar
+              </button>
               <button type="submit" class="btn-primary">Guardar</button>
             </div>
           </form>
@@ -236,12 +309,18 @@
 
       <!-- Modal Detalles de Orden -->
       <div id="order-detail-modal" class="modal">
-        <div class="modal-content" style="width: 550px;">
-          <span class="modal-close" onclick="document.getElementById('order-detail-modal').style.display='none'">&times;</span>
+        <div class="modal-content" style="width: 550px">
+          <span
+            class="modal-close"
+            onclick="document.getElementById('order-detail-modal').style.display='none'"
+            >&times;</span
+          >
           <h3>Detalles de la Orden</h3>
           <div id="order-detail-content"></div>
           <div class="modal-actions">
-            <button type="button" id="btn-close-detail" class="btn-secondary">Cerrar</button>
+            <button type="button" id="btn-close-detail" class="btn-secondary">
+              Cerrar
+            </button>
           </div>
         </div>
       </div>

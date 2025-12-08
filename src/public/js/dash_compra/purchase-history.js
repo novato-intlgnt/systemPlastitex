@@ -27,6 +27,7 @@ function initTable() {
           return date.toLocaleDateString("es-BO");
         }
       },
+      { title: "Creado por", field: "created_by", minWidth: 150 },
       { title: "Proveedor", field: "supplier_name", minWidth: 150 },
       { 
         title: "Total", 
@@ -34,7 +35,7 @@ function initTable() {
         width: 120, 
         hozAlign: "right",
         formatter: "money",
-        formatterParams: { symbol: "Bs. ", precision: 2 }
+        formatterParams: { symbol: "$/. ", precision: 2 }
       },
       { 
         title: "Estado", 
@@ -53,7 +54,6 @@ function initTable() {
           return `<span class="status-badge" style="background: ${color};">${status || 'N/A'}</span>`;
         }
       },
-      { title: "Creado por", field: "created_by", width: 130 },
     ],
   });
 }
@@ -114,7 +114,7 @@ function updateSummary(data) {
       </div>
       <div class="summary-card">
         <span class="summary-label">Monto Total</span>
-        <span class="summary-value">Bs. ${totalAmount.toFixed(2)}</span>
+        <span class="summary-value">$/. ${totalAmount.toFixed(2)}</span>
       </div>
     `;
   }

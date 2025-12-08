@@ -15,7 +15,7 @@ class ProductController:
             raise HTTPException(status_code=403, detail="Acceso no autorizado.")
 
     async def get_all(self, current_role: str):
-        self._check_role(current_role, ["aux_almacen", "jefe_almacen", "admin"])
+        self._check_role(current_role, ["aux_almacen", "aux_compra", "admin"])
         try:
             products = await self.product_model.get_all()
             if not products:

@@ -155,30 +155,71 @@ CREATE OR REPLACE FUNCTION sp_get_kardex_fisico(
     p_end_date DATE
 )
 RETURNS TABLE (
-    movement_date TIMESTAMP,
+    movement_date DATE,
     movement_type VARCHAR,
     reference VARCHAR,
+    entity_type VARCHAR,
+    entity_name VARCHAR,
     quantity INTEGER,
+    previous_balance INTEGER,
     running_balance INTEGER
 ) AS $$
 BEGIN
     RETURN QUERY
     WITH movements AS (
-        SELECT en.date AS mov_date, 'ENTRADA'::VARCHAR AS mov_type, COALESCE(en.reference, 'N/A')::VARCHAR AS ref, end_det.quantity AS qty
+        SELECT 
+            en.date::DATE AS mov_date,
+            'ENTRADA'::VARCHAR AS mov_type,
+            COALESCE(en.reference, 'N/A') AS ref,
+            'SUPPLIER'::VARCHAR AS party_type,
+            COALESCE(sup.name, 'NON SUPPLIER') AS party_name,
+            end_det.quantity AS qty
         FROM entry_note_detail end_det
         JOIN entry_note en ON en.id = end_det.entry_id
-        WHERE end_det.product_id = p_product_id AND en.date::DATE BETWEEN p_start_date AND p_end_date
+        LEFT JOIN suppliers sup ON sup.id = en.supplier_id
+        WHERE end_det.product_id = p_product_id
+          AND en.date::DATE BETWEEN p_start_date::DATE AND p_end_date::DATE
+
         UNION ALL
-        SELECT ex.date AS mov_date, 'SALIDA'::VARCHAR AS mov_type, COALESCE(ex.reference, 'N/A')::VARCHAR AS ref, -exd.quantity AS qty
+
+        SELECT 
+            ex.date::DATE AS mov_date,
+            'SALIDA'::VARCHAR AS mov_type,
+            COALESCE(ex.reference, 'N/A') AS ref,
+            'CUSTOMER'::VARCHAR AS entity_type,
+            COALESCE(cus.name, 'NON CUSTOMER') AS party_name,
+            -exd.quantity AS qty
         FROM exit_note_detail exd
         JOIN exit_note ex ON ex.id = exd.exit_id
-        WHERE exd.product_id = p_product_id AND ex.date::DATE BETWEEN p_start_date AND p_end_date
+        LEFT JOIN customers cus ON cus.id = ex.customer_id
+        WHERE exd.product_id = p_product_id
+          AND ex.date::DATE BETWEEN p_start_date::DATE AND p_end_date::DATE
+    ),
+
+    ordered AS (
+        SELECT 
+            mov_date,
+            mov_type,
+            ref,
+            party_type,
+            party_name,
+            qty,
+            SUM(qty) OVER (ORDER BY mov_date ROWS UNBOUNDED PRECEDING) AS rb
+        FROM movements
+        ORDER BY mov_date
     )
-    SELECT 
-        m.mov_date, m.mov_type, m.ref, m.qty,
-        SUM(m.qty) OVER (ORDER BY m.mov_date ROWS UNBOUNDED PRECEDING)::INTEGER
-    FROM movements m
-    ORDER BY m.mov_date;
+
+    SELECT
+        mov_date AS movement_date,
+        mov_type AS movement_type,
+        ref AS reference,
+        party_type AS entity_type,
+        party_name AS entity_name,
+        qty::INTEGER AS quantity,
+        (rb - qty)::INTEGER AS previous_balance,
+        rb::INTEGER AS running_balance
+    FROM ordered;
+
 END;
 $$ LANGUAGE plpgsql;
 
@@ -214,20 +255,22 @@ CREATE OR REPLACE FUNCTION sp_get_purchase_history(
 )
 RETURNS TABLE (
     order_id INTEGER,
-    order_date TIMESTAMP,
+    order_date DATE,
     supplier_name VARCHAR,
     total DECIMAL,
-    status VARCHAR
+    status VARCHAR,
+    userName VARCHAR
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT po.id, po.date, s.name, po.total, po.status
+    SELECT po.id, po.date::DATE, s.name, po.total, po.status, u.fullname
     FROM purchase_order po
     JOIN suppliers s ON s.id = po.supplier_id
+	JOIN users u ON u.id = po.user_id
     WHERE (p_supplier_id IS NULL OR po.supplier_id = p_supplier_id)
-      AND (p_start_date IS NULL OR po.date >= p_start_date)
-      AND (p_end_date IS NULL OR po.date <= p_end_date)
-    ORDER BY po.date DESC;
+      AND (p_start_date IS NULL OR po.date::DATE >= p_start_date)
+      AND (p_end_date IS NULL OR po.date::DATE <= p_end_date)
+    ORDER BY po.date::DATE DESC;
 END;
 $$ LANGUAGE plpgsql;
 

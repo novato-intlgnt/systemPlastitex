@@ -12,11 +12,11 @@ class ClientRepository:
 
     @staticmethod
     async def check_exists(
-        email: str, poolDB: async_sessionmaker[AsyncSession] = async_session_maker
+        name: str, poolDB: async_sessionmaker[AsyncSession] = async_session_maker
     ) -> bool:
-        """Verificar si un cliente ya existe por email"""
+        """Verificar si un cliente ya existe por nombre"""
         async with poolDB() as session:
-            query = select(Customer).where(Customer.email == email)
+            query = select(Customer).where(Customer.name == name)
             result = await session.execute(query)
             client = result.scalar_one_or_none()
             return client is not None
@@ -165,4 +165,3 @@ class ClientRepository:
             except SQLAlchemyError as e:
                 await session.rollback()
                 raise HTTPException(500, f"Error en la base de datos: {str(e)}")
-

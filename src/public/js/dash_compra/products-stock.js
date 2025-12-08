@@ -13,8 +13,8 @@ function initTable() {
     data: [],
     layout: "fitColumns",
     pagination: "local",
-    paginationSize: 15,
-    height: "70vh",
+    paginationSize: 17,
+    height: "55vh",
     placeholder: "No hay productos",
     columns: [
       { title: "ID", field: "id", width: 70, hozAlign: "center" },
@@ -38,7 +38,7 @@ function initTable() {
         width: 110, 
         hozAlign: "right",
         formatter: "money",
-        formatterParams: { symbol: "Bs. ", precision: 2 }
+        formatterParams: { symbol: "$/. ", precision: 2 }
       },
     ],
   });

@@ -38,15 +38,8 @@ async def create_client(
     data: dict, user: dict = Depends(require_role("admin", "aux_almacen"))
 ):
     try:
-        # Validar campos requeridos
-        if "name" not in data or "email" not in data:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Los campos 'name' y 'email' son requeridos",
-            )
-
-        # Verificar si el email ya existe
-        exists = await ClientRepository.check_exists(data["email"])
+        print(data)
+        exists = await ClientRepository.check_exists(data["name"])
         if exists:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -112,4 +105,3 @@ async def delete_client(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error al eliminar cliente: {str(e)}",
         )
-
