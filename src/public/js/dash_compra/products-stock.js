@@ -122,3 +122,7 @@ async function initProductsStockModule() {
 document.getElementById("btn-products-stock")?.addEventListener("click", () => {
   initProductsStockModule();
 });
+
+document.getElementById("btn-refresh-products")?.addEventListener("click", () => {
+  initProductsStockModule();
+});

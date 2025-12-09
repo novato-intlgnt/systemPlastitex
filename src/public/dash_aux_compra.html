@@ -55,49 +55,49 @@
         <div class="logo_name">PlastiTex</div>
         <i class="fi fi-rr-menu-burger" id="btn"></i>
       </div>
-    <ul class="nav-list">
+      <ul class="nav-list">
         <li>
-            <a href="#supplier-section" id="btn-suppliers">
-                <i class="fi fi-rr-supplier-alt"></i>
-                <span class="links_name">Proveedores</span>
-            </a>
-            <span class="tooltip">Proveedores</span>
+          <a href="#supplier-section" id="btn-suppliers">
+            <i class="fi fi-rr-supplier-alt"></i>
+            <span class="links_name">Proveedores</span>
+          </a>
+          <span class="tooltip">Proveedores</span>
         </li>
-    
+
         <li>
-            <a href="#products-section" id="btn-products-stock">
-                <i class="fi fi-rr-boxes"></i>
-                <span class="links_name">Productos - Stock</span>
-            </a>
-            <span class="tooltip">Productos - Stock</span>
+          <a href="#products-section" id="btn-products-stock">
+            <i class="fi fi-rr-boxes"></i>
+            <span class="links_name">Productos - Stock</span>
+          </a>
+          <span class="tooltip">Productos - Stock</span>
         </li>
-    
+
         <li>
-            <a href="#history-section" id="btn-history">
-                <i class="fi fi-rr-files-medical"></i>
-                <span class="links_name">Historial Compras</span>
-            </a>
-            <span class="tooltip">Historial Compras</span>
+          <a href="#history-section" id="btn-history">
+            <i class="fi fi-rr-files-medical"></i>
+            <span class="links_name">Historial Compras</span>
+          </a>
+          <span class="tooltip">Historial Compras</span>
         </li>
-    
+
         <li>
-            <a href="#orders-section" id="btn-orders">
-                <i class="fi fi-rr-arrow-progress"></i>
-                <span class="links_name">Órdenes Compra</span>
-            </a>
-            <span class="tooltip">Órdenes Compra</span>
+          <a href="#orders-section" id="btn-orders">
+            <i class="fi fi-rr-arrow-progress"></i>
+            <span class="links_name">Órdenes Compra</span>
+          </a>
+          <span class="tooltip">Órdenes Compra</span>
         </li>
-    
+
         <li class="profile">
-            <div class="profile-details">
-                <img src="profile.jpg" alt="profileImg" />
-                <div class="name_job">
-                    <div id="user" class="name"></div>
-                </div>
+          <div class="profile-details">
+            <img src="profile.jpg" alt="profileImg" />
+            <div class="name_job">
+              <div id="user" class="name"></div>
             </div>
-            <i class="fi fi-rr-sign-out-alt" id="log_out"></i>
+          </div>
+          <i class="fi fi-rr-sign-out-alt" id="log_out"></i>
         </li>
-    </ul>
+      </ul>
     </div>
 
     <!-- ================================================================== -->
@@ -167,11 +167,7 @@
     <section id="products-section" class="home-section">
       <div class="section-header">
         <h2>Productos y Stock</h2>
-        <button
-          id="btn-refresh-products"
-          class="btn-icon"
-          onclick="location.reload()"
-        >
+        <button id="btn-refresh-products" class="btn-icon">
           <i class="fi fi-rr-refresh"></i> Actualizar
         </button>
       </div>
@@ -350,7 +346,11 @@
                 </div>
                 <div class="form-group btn-add-container">
                   <label>&nbsp;</label>
-                  <button type="button" id="btn-add-product" class="btn-add-item">
+                  <button
+                    type="button"
+                    id="btn-add-product"
+                    class="btn-add-item"
+                  >
                     <i class="fi fi-rr-plus"></i> Añadir
                   </button>
                 </div>
@@ -375,7 +375,9 @@
                     <!-- Filas de productos se agregan dinámicamente -->
                   </tbody>
                 </table>
-                <p id="no-products-msg" class="text-muted">No hay productos agregados</p>
+                <p id="no-products-msg" class="text-muted">
+                  No hay productos agregados
+                </p>
               </div>
             </div>
 

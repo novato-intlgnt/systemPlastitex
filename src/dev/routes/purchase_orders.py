@@ -43,16 +43,11 @@ async def get_purchase_order_by_id(order_id: int, user: dict = Depends(only_user
 async def create_purchase_order(
     data: dict, user: dict = Depends(require_role("admin", "aux_compra"))
 ):
-    # Opción 1: Usar el script
-    .\run_windows.ps1
-    
-    # Opción 2: Manualmente
-    .\.venv\Scripts\Activate.ps1
-    python main.py    """
+    """
     Crear una nueva orden de compra con sus detalles.
-    
+
     **Roles permitidos:** admin, aux_compra
-    
+
     **Body Parameters:**
     - **supplier_id**: ID del proveedor (requerido)
     - **status**: Estado de la orden (opcional, default: "pendiente")
@@ -60,7 +55,7 @@ async def create_purchase_order(
         - **product_id**: ID del producto
         - **quantity**: Cantidad
         - **unit_price**: Precio unitario
-    
+
     **Returns:**
     - **status**: "success"
     - **message**: Mensaje de confirmación
@@ -73,7 +68,7 @@ async def create_purchase_order(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="El campo 'supplier_id' es requerido",
             )
-        
+
         # Validar que haya detalles
         details = data.get("details", [])
         if not details or len(details) == 0:
@@ -81,7 +76,7 @@ async def create_purchase_order(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Debe incluir al menos un producto en la orden (campo 'details')",
             )
-        
+
         # Validar cada detalle
         for i, detail in enumerate(details):
             if "product_id" not in detail:
@@ -99,11 +94,9 @@ async def create_purchase_order(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail=f"El detalle {i+1} debe tener un precio unitario válido",
                 )
-        
+
         # Calcular el total desde los detalles
-        calculated_total = sum(
-            d["quantity"] * d["unit_price"] for d in details
-        )
+        calculated_total = sum(d["quantity"] * d["unit_price"] for d in details)
         data["total"] = calculated_total
 
         # Crear la orden de compra
@@ -129,17 +122,17 @@ async def update_purchase_order(
 ):
     """
     Actualizar una orden de compra.
-    
+
     **Roles permitidos:** admin, aux_compra
-    
+
     **Path Parameters:**
     - **order_id**: ID de la orden a actualizar
-    
+
     **Body Parameters:**
     - **supplier_id**: ID del proveedor (opcional)
     - **status**: Estado de la orden (opcional)
     - **details**: Array de detalles de productos (opcional, reemplaza los existentes)
-    
+
     **Returns:**
     - **status**: "success"
     - **message**: Mensaje de confirmación
@@ -172,7 +165,7 @@ async def update_purchase_order(
                         status_code=status.HTTP_400_BAD_REQUEST,
                         detail=f"El detalle {i+1} debe tener un precio unitario válido",
                     )
-            
+
             # Calcular el total desde los detalles
             data["total"] = sum(d["quantity"] * d["unit_price"] for d in details)
 

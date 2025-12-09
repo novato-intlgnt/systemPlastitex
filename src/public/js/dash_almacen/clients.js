@@ -9,7 +9,6 @@ import { TableModule } from "./../tableModule.js";
 let clientsTable = null;
 
 function initClientsModule() {
-  // Si ya existe la tabla, solo recargar sus datos
   if (clientsTable) {
     clientsTable.reload();
     return;
@@ -46,9 +45,10 @@ function initClientsModule() {
   });
 }
 
-/* ============================================
-   ACTIVAR CUANDO SE HAGA CLIC EN EL BOTÓN
-============================================ */
 document.getElementById("btn-clients")?.addEventListener("click", () => {
+  initClientsModule();
+});
+
+document.addEventListener("DOMContentLoaded", () => {
   initClientsModule();
 });
