@@ -12,6 +12,7 @@ app = create_app()
 
 if __name__ == "__main__":
     import os
+    import sys
 
     import uvicorn
 
@@ -22,11 +23,22 @@ if __name__ == "__main__":
     SSL_CERT = os.path.join(CERT_DIR, "localhost+2.pem")
     SSL_KEY = os.path.join(CERT_DIR, "localhost+2-key.pem")
 
-    uvicorn.run(
-        "main:app",
-        host="0.0.0.0",
-        port=4000,
-        reload=True,
-        ssl_certfile=SSL_CERT,
-        ssl_keyfile=SSL_KEY,
-    )
+    # En Windows usar HTTP, en Linux usar HTTPS con certificados
+    if sys.platform == "win32":
+        # HTTP para Windows (más fácil para desarrollo)
+        uvicorn.run(
+            "main:app",
+            host="127.0.0.1",
+            port=4000,
+            reload=True,
+        )
+    else:
+        # HTTPS para Linux con certificados
+        uvicorn.run(
+            "main:app",
+            host="0.0.0.0",
+            port=4000,
+            reload=True,
+            ssl_certfile=SSL_CERT,
+            ssl_keyfile=SSL_KEY,
+        )
