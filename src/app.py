@@ -25,6 +25,8 @@ def create_app():
         allow_origins=[
             "https://localhost:4000",
             "https://127.0.0.1:4000",
+            "http://localhost:4000",
+            "http://127.0.0.1:4000",
         ],
         allow_credentials=True,
         allow_methods=["*"],

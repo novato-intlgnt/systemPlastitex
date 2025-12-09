@@ -12,12 +12,19 @@ import {
 /**
  * Módulo de órdenes de compra (CRUD)
  * Para el rol aux_compra
+ * Implementa carga perezosa (lazy loading)
  */
 
 const API = window.location.origin;
-let table;
+let table = null;
 let isEditing = false;
 let currentEditId = null;
+let moduleInitialized = false;
+
+// Array para almacenar los detalles de productos de la orden actual
+let orderDetails = [];
+// Cache de productos para obtener info rápidamente
+let productsCache = [];
 
 function initTable() {
   table = new Tabulator("#purchase-orders-table", {
@@ -45,7 +52,7 @@ function initTable() {
         width: 120, 
         hozAlign: "right",
         formatter: "money",
-        formatterParams: { symbol: "$/. ", precision: 2 }
+        formatterParams: { symbol: "S/. ", precision: 2 }
       },
       { 
         title: "Estado", 
@@ -108,6 +115,179 @@ async function loadSuppliers() {
   }
 }
 
+/**
+ * Carga los productos disponibles para agregar a la orden
+ */
+async function loadProducts() {
+  try {
+    const res = await apiRequest(`${API}/product`);
+    const products = res.products || [];
+    productsCache = products;
+    
+    const select = document.getElementById("product-select");
+    if (select) {
+      select.innerHTML = '<option value="">Seleccione producto</option>' +
+        products.map(p => `<option value="${p.id}" data-price="${p.purchase_price || 0}">${p.name}</option>`).join("");
+    }
+  } catch (error) {
+    console.error("Error cargando productos:", error);
+  }
+}
+
+/**
+ * Obtiene un producto del cache por su ID
+ */
+function getProductById(productId) {
+  return productsCache.find(p => p.id === parseInt(productId));
+}
+
+/**
+ * Actualiza el precio unitario cuando se selecciona un producto
+ */
+function onProductSelect() {
+  const select = document.getElementById("product-select");
+  const priceInput = document.getElementById("product-unit-price");
+  const quantityInput = document.getElementById("product-quantity");
+  
+  if (!select || !priceInput) return;
+  
+  const productId = select.value;
+  if (!productId) {
+    priceInput.value = "0";
+    calculateLineTotal();
+    return;
+  }
+  
+  const product = getProductById(productId);
+  if (product) {
+    priceInput.value = parseFloat(product.purchase_price || 0).toFixed(2);
+    quantityInput.value = 1;
+    calculateLineTotal();
+  }
+}
+
+/**
+ * Calcula el total de la línea (cantidad * precio unitario)
+ */
+function calculateLineTotal() {
+  const quantity = parseFloat(document.getElementById("product-quantity")?.value) || 0;
+  const unitPrice = parseFloat(document.getElementById("product-unit-price")?.value) || 0;
+  const lineTotalInput = document.getElementById("product-line-total");
+  
+  if (lineTotalInput) {
+    lineTotalInput.value = (quantity * unitPrice).toFixed(2);
+  }
+}
+
+/**
+ * Agrega un producto a la lista de detalles de la orden
+ */
+function addProductToOrder() {
+  const productSelect = document.getElementById("product-select");
+  const quantityInput = document.getElementById("product-quantity");
+  const unitPriceInput = document.getElementById("product-unit-price");
+  
+  const productId = parseInt(productSelect?.value);
+  const quantity = parseInt(quantityInput?.value) || 0;
+  const unitPrice = parseFloat(unitPriceInput?.value) || 0;
+  
+  if (!productId) {
+    showError("Seleccione un producto");
+    return;
+  }
+  
+  if (quantity <= 0) {
+    showError("La cantidad debe ser mayor a 0");
+    return;
+  }
+  
+  if (unitPrice <= 0) {
+    showError("El precio unitario debe ser mayor a 0");
+    return;
+  }
+  
+  // Verificar si el producto ya está en la lista
+  const existingIndex = orderDetails.findIndex(d => d.product_id === productId);
+  if (existingIndex >= 0) {
+    // Actualizar cantidad si ya existe
+    orderDetails[existingIndex].quantity += quantity;
+  } else {
+    // Agregar nuevo detalle
+    const product = getProductById(productId);
+    orderDetails.push({
+      product_id: productId,
+      product_name: product?.name || 'Producto',
+      quantity: quantity,
+      unit_price: unitPrice
+    });
+  }
+  
+  // Actualizar UI
+  renderOrderDetails();
+  recalculateOrderTotal();
+  
+  // Limpiar campos de entrada
+  productSelect.value = "";
+  quantityInput.value = "1";
+  unitPriceInput.value = "0";
+  document.getElementById("product-line-total").value = "0";
+}
+
+/**
+ * Elimina un producto de la lista de detalles
+ */
+function removeProductFromOrder(index) {
+  orderDetails.splice(index, 1);
+  renderOrderDetails();
+  recalculateOrderTotal();
+}
+
+/**
+ * Renderiza la tabla de detalles de la orden
+ */
+function renderOrderDetails() {
+  const tbody = document.getElementById("order-details-body");
+  const container = document.querySelector(".details-table-container");
+  
+  if (!tbody) return;
+  
+  if (orderDetails.length === 0) {
+    tbody.innerHTML = "";
+    container?.classList.remove("has-items");
+    return;
+  }
+  
+  container?.classList.add("has-items");
+  
+  tbody.innerHTML = orderDetails.map((detail, index) => `
+    <tr>
+      <td>${detail.product_name}</td>
+      <td>${detail.quantity}</td>
+      <td>${parseFloat(detail.unit_price).toFixed(2)}</td>
+      <td>${(detail.quantity * detail.unit_price).toFixed(2)}</td>
+      <td>
+        <button type="button" class="btn-remove-item" onclick="window.removeOrderDetail(${index})" title="Eliminar">
+          <i class="fi fi-rr-trash"></i>
+        </button>
+      </td>
+    </tr>
+  `).join("");
+}
+
+/**
+ * Recalcula el total de la orden basándose en los detalles
+ */
+function recalculateOrderTotal() {
+  const total = orderDetails.reduce((sum, detail) => {
+    return sum + (detail.quantity * detail.unit_price);
+  }, 0);
+  
+  const totalInput = document.getElementById("order-total");
+  if (totalInput) {
+    totalInput.value = total.toFixed(2);
+  }
+}
+
 async function loadOrders() {
   try {
     const res = await apiRequest(`${API}/purchase-orders`);
@@ -122,20 +302,61 @@ async function loadOrders() {
 function openCreate() {
   isEditing = false;
   currentEditId = null;
+  orderDetails = []; // Limpiar detalles
+  
   clearForm("order-form");
   document.getElementById("order-modal-title").textContent = "Nueva Orden de Compra";
+  document.getElementById("order-total").value = "0";
+  
+  // Limpiar campos de producto
+  document.getElementById("product-select").value = "";
+  document.getElementById("product-quantity").value = "1";
+  document.getElementById("product-unit-price").value = "0";
+  document.getElementById("product-line-total").value = "0";
+  
+  renderOrderDetails();
   openModal("order-modal");
 }
 
-function openEdit(row) {
+async function openEdit(row) {
   isEditing = true;
   currentEditId = row.id;
+  orderDetails = []; // Limpiar y cargar detalles existentes
+  
   clearForm("order-form");
+  
+  try {
+    // Cargar detalles de la orden
+    const res = await apiRequest(`${API}/purchase-orders/${row.id}`);
+    const order = res.data;
+    
+    if (order && order.details) {
+      orderDetails = order.details.map(d => ({
+        product_id: d.product_id,
+        product_name: d.product_name || 'Producto',
+        quantity: d.quantity,
+        unit_price: parseFloat(d.unit_price)
+      }));
+    }
+  } catch (error) {
+    console.error("Error cargando detalles:", error);
+  }
+  
   fillForm("order-form", {
     supplier_id: row.supplier_id,
     total: row.total,
     status: row.status
   });
+  
+  // Limpiar campos de producto
+  document.getElementById("product-select").value = "";
+  document.getElementById("product-quantity").value = "1";
+  document.getElementById("product-unit-price").value = "0";
+  document.getElementById("product-line-total").value = "0";
+  
+  renderOrderDetails();
+  recalculateOrderTotal();
+  
   document.getElementById("order-modal-title").textContent = "Editar Orden de Compra";
   openModal("order-modal");
 }
@@ -153,7 +374,7 @@ async function viewDetails(orderId) {
           <p><strong>Orden #:</strong> ${order.id}</p>
           <p><strong>Proveedor:</strong> ${order.supplier_name || 'N/A'}</p>
           <p><strong>Fecha:</strong> ${new Date(order.date).toLocaleDateString("es-BO")}</p>
-          <p><strong>Total:</strong> $/. ${parseFloat(order.total || 0).toFixed(2)}</p>
+          <p><strong>Total:</strong> S/. ${parseFloat(order.total || 0).toFixed(2)}</p>
           <p><strong>Estado:</strong> ${order.status || 'N/A'}</p>
         </div>
         <h4 style="color: white"><strong>Lista de Productos</strong></h4>
@@ -161,8 +382,8 @@ async function viewDetails(orderId) {
           ${order.details?.length > 0 ? order.details.map(d => `
             <div class="detail-item">
               <span>${d.product_name}</span>
-              <span>${d.quantity} x $/. ${parseFloat(d.unit_price || 0).toFixed(2)}</span>
-              <span><strong>$/. ${(d.quantity * (d.unit_price || 0)).toFixed(2)}</strong></span>
+              <span>${d.quantity} x S/. ${parseFloat(d.unit_price || 0).toFixed(2)}</span>
+              <span><strong>S/. ${(d.quantity * (d.unit_price || 0)).toFixed(2)}</strong></span>
             </div>
           `).join("") : '<p>No hay detalles registrados</p>'}
         </div>
@@ -178,12 +399,27 @@ async function viewDetails(orderId) {
 async function submitOrder(e) {
   e.preventDefault();
   
+  // Validar que haya al menos un producto
+  if (orderDetails.length === 0) {
+    showError("Debe agregar al menos un producto a la orden");
+    return;
+  }
+  
   const form = document.getElementById("order-form");
   const formData = new FormData(form);
+  
+  // Calcular el total desde los detalles
+  const calculatedTotal = orderDetails.reduce((sum, d) => sum + (d.quantity * d.unit_price), 0);
+  
   const payload = {
     supplier_id: parseInt(formData.get("supplier_id")),
-    total: parseFloat(formData.get("total")) || 0,
-    status: formData.get("status") || "pendiente"
+    total: calculatedTotal,
+    status: formData.get("status") || "pendiente",
+    details: orderDetails.map(d => ({
+      product_id: d.product_id,
+      quantity: d.quantity,
+      unit_price: d.unit_price
+    }))
   };
 
   try {
@@ -248,7 +484,7 @@ function showError(message) {
 }
 
 function initEvents() {
-  // Botón agregar
+  // Botón agregar orden
   const btnAdd = document.getElementById("btn-add-order");
   if (btnAdd) btnAdd.addEventListener("click", openCreate);
 
@@ -264,6 +500,27 @@ function initEvents() {
     });
   }
 
+  // Selector de producto - mostrar precio al seleccionar
+  const productSelect = document.getElementById("product-select");
+  if (productSelect) {
+    productSelect.addEventListener("change", onProductSelect);
+  }
+
+  // Cantidad - recalcular total de línea
+  const quantityInput = document.getElementById("product-quantity");
+  if (quantityInput) {
+    quantityInput.addEventListener("input", calculateLineTotal);
+  }
+
+  // Botón añadir producto
+  const btnAddProduct = document.getElementById("btn-add-product");
+  if (btnAddProduct) {
+    btnAddProduct.addEventListener("click", addProductToOrder);
+  }
+
+  // Exponer función para eliminar detalle (usada desde el HTML)
+  window.removeOrderDetail = removeProductFromOrder;
+
   // Modal events
   setupCancelButton("btn-cancel-order", "order-modal");
   setupModalBackdropClose("order-modal");
@@ -276,10 +533,30 @@ function initEvents() {
   if (btnCloseDetail) btnCloseDetail.addEventListener("click", () => closeModal("order-detail-modal"));
 }
 
-// Inicialización
-(async function init() {
+// ============================================================================
+// INICIALIZACIÓN CON CARGA PEREZOSA
+// ============================================================================
+
+async function initPurchaseOrdersModule() {
+  // Si ya está inicializado, solo recargar datos
+  if (moduleInitialized) {
+    await loadOrders();
+    return;
+  }
+
+  // Primera inicialización
   initTable();
   initEvents();
   await loadSuppliers();
+  await loadProducts();
   await loadOrders();
-})();
+  
+  moduleInitialized = true;
+}
+
+/* ============================================
+   ACTIVAR CUANDO SE HAGA CLIC EN EL BOTÓN
+============================================ */
+document.getElementById("btn-orders")?.addEventListener("click", () => {
+  initPurchaseOrdersModule();
+});

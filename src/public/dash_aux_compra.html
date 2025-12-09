@@ -57,33 +57,37 @@
       </div>
       <ul class="nav-list">
         <li>
-          <a href="#supplier-section">
+          <a href="#supplier-section" id="btn-suppliers">
             <i class="fi fi-rr-supplier-alt"></i>
             <span class="links_name">Proveedores</span>
           </a>
           <span class="tooltip">Proveedores</span>
         </li>
+
         <li>
-          <a href="#products-section">
+          <a href="#products-section" id="btn-products-stock">
             <i class="fi fi-rr-boxes"></i>
             <span class="links_name">Productos - Stock</span>
           </a>
           <span class="tooltip">Productos - Stock</span>
         </li>
+
         <li>
-          <a href="#history-section">
+          <a href="#history-section" id="btn-history">
             <i class="fi fi-rr-files-medical"></i>
             <span class="links_name">Historial Compras</span>
           </a>
           <span class="tooltip">Historial Compras</span>
         </li>
+
         <li>
-          <a href="#orders-section">
+          <a href="#orders-section" id="btn-orders">
             <i class="fi fi-rr-arrow-progress"></i>
             <span class="links_name">Órdenes Compra</span>
           </a>
           <span class="tooltip">Órdenes Compra</span>
         </li>
+
         <li class="profile">
           <div class="profile-details">
             <img src="profile.jpg" alt="profileImg" />
@@ -163,11 +167,7 @@
     <section id="products-section" class="home-section">
       <div class="section-header">
         <h2>Productos y Stock</h2>
-        <button
-          id="btn-refresh-products"
-          class="btn-icon"
-          onclick="location.reload()"
-        >
+        <button id="btn-refresh-products" class="btn-icon">
           <i class="fi fi-rr-refresh"></i> Actualizar
         </button>
       </div>
@@ -261,7 +261,7 @@
 
       <!-- Modal Orden de Compra -->
       <div id="order-modal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content modal-content-lg">
           <span
             class="modal-close"
             onclick="document.getElementById('order-modal').style.display='none'"
@@ -269,6 +269,7 @@
           >
           <h3 id="order-modal-title">Nueva Orden de Compra</h3>
           <form id="order-form">
+            <!-- Datos de la orden -->
             <div class="form-group">
               <label for="order-supplier">Proveedor</label>
               <select name="supplier_id" id="order-supplier" required>
@@ -277,7 +278,7 @@
             </div>
             <div class="form-row">
               <div class="form-group">
-                <label for="order-total">Total ($/.)</label>
+                <label for="order-total">Total (S/.)</label>
                 <input
                   type="number"
                   name="total"
@@ -285,6 +286,8 @@
                   step="0.01"
                   min="0"
                   value="0"
+                  readonly
+                  class="input-readonly"
                 />
               </div>
               <div class="form-group">
@@ -297,6 +300,87 @@
                 </select>
               </div>
             </div>
+
+            <!-- Sección de agregar productos -->
+            <div class="product-entry-section">
+              <h4 class="section-subtitle">Agregar Producto</h4>
+              <div class="product-entry-row">
+                <div class="form-group flex-2">
+                  <label for="product-select">Producto</label>
+                  <select id="product-select">
+                    <option value="">Seleccione producto</option>
+                  </select>
+                </div>
+                <div class="form-group flex-1">
+                  <label for="product-quantity">Cantidad</label>
+                  <input
+                    type="number"
+                    id="product-quantity"
+                    min="1"
+                    value="1"
+                    step="1"
+                  />
+                </div>
+                <div class="form-group flex-1">
+                  <label for="product-unit-price">P. Unit (S/.)</label>
+                  <input
+                    type="number"
+                    id="product-unit-price"
+                    step="0.01"
+                    min="0"
+                    value="0"
+                    readonly
+                    class="input-readonly"
+                  />
+                </div>
+                <div class="form-group flex-1">
+                  <label for="product-line-total">Total</label>
+                  <input
+                    type="number"
+                    id="product-line-total"
+                    step="0.01"
+                    value="0"
+                    readonly
+                    class="input-readonly"
+                  />
+                </div>
+                <div class="form-group btn-add-container">
+                  <label>&nbsp;</label>
+                  <button
+                    type="button"
+                    id="btn-add-product"
+                    class="btn-add-item"
+                  >
+                    <i class="fi fi-rr-plus"></i> Añadir
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tabla de productos en el pedido -->
+            <div class="order-details-section">
+              <h4 class="section-subtitle">Productos en el Pedido</h4>
+              <div class="details-table-container">
+                <table class="details-table" id="order-details-table">
+                  <thead>
+                    <tr>
+                      <th>Producto</th>
+                      <th>Cant</th>
+                      <th>P.unit</th>
+                      <th>Total</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="order-details-body">
+                    <!-- Filas de productos se agregan dinámicamente -->
+                  </tbody>
+                </table>
+                <p id="no-products-msg" class="text-muted">
+                  No hay productos agregados
+                </p>
+              </div>
+            </div>
+
             <div class="modal-actions">
               <button type="button" id="btn-cancel-order" class="btn-secondary">
                 Cancelar

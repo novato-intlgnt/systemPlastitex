@@ -3,10 +3,12 @@ import { apiRequest } from "./../fetchModule.js";
 /**
  * Módulo de visualización de productos/stock (solo lectura)
  * Para el rol aux_compra - ve el stock actual sin poder modificar
+ * Implementa carga perezosa (lazy loading)
  */
 
 const API = window.location.origin;
-let table;
+let table = null;
+let moduleInitialized = false;
 
 function initTable() {
   table = new Tabulator("#products-stock-table", {
@@ -93,10 +95,34 @@ async function loadLowStock() {
   }
 }
 
-// Inicialización
-(async function init() {
+// ============================================================================
+// INICIALIZACIÓN CON CARGA PEREZOSA
+// ============================================================================
+
+async function initProductsStockModule() {
+  // Si ya está inicializado, solo recargar datos
+  if (moduleInitialized) {
+    await loadProducts();
+    await loadLowStock();
+    return;
+  }
+
+  // Primera inicialización
   initTable();
   initSearch();
   await loadProducts();
   await loadLowStock();
-})();
+  
+  moduleInitialized = true;
+}
+
+/* ============================================
+   ACTIVAR CUANDO SE HAGA CLIC EN EL BOTÓN
+============================================ */
+document.getElementById("btn-products-stock")?.addEventListener("click", () => {
+  initProductsStockModule();
+});
+
+document.getElementById("btn-refresh-products")?.addEventListener("click", () => {
+  initProductsStockModule();
+});
