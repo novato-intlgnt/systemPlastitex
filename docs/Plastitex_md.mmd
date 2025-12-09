@@ -1,0 +1,134 @@
+---
+config:
+  theme: neo
+  layout: elk
+  look: neo
+---
+classDiagram
+direction TB
+    class Users {
+	    +id: int ~~
+	    +username: varchar
+	    +password: text
+	    +fullname: varchar
+	    +role: varchar
+    }
+
+    class Categories {
+	    +id: int ~~
+	    +name: varchar
+	    +is_active: boolean
+	    +deleted_at: timestamp
+    }
+
+    class Units {
+	    +id: int ~~
+	    +name: varchar
+	    +is_active: boolean
+	    +deleted_at: timestamp
+    }
+
+    class Suppliers {
+	    +id: int ~~
+	    +name: varchar
+	    +phone: varchar
+	    +address: varchar
+	    +is_active: boolean
+	    +deleted_at: timestamp
+    }
+
+    class Customers {
+	    +id: int ~~
+	    +name: varchar
+	    +phone: varchar
+	    +address: varchar
+	    +is_active: boolean
+	    +deleted_at: timestamp
+    }
+
+    class Products {
+	    +id: int ~~
+	    +name: varchar
+	    +category_id: int ~~
+	    +unit_id: int ~~
+	    +stock: int
+	    +sale_price: decimal
+	    +purchase_price: decimal
+	    +is_active: boolean
+	    +deleted_at: timestamp
+    }
+
+    class PurchaseOrder {
+	    +id: int ~~
+	    +user_id: int ~~
+	    +supplier_id: int ~~
+	    +date: timestamp
+	    +total: decimal
+	    +status: varchar
+	    +is_active: boolean
+	    +deleted_at: timestamp
+    }
+
+    class PurchaseOrderDetail {
+	    +id: int ~~
+	    +order_id: int ~~
+	    +product_id: int ~~
+	    +quantity: int
+	    +unit_price: decimal
+	    +is_active: boolean
+	    +deleted_at: timestamp
+    }
+
+    class EntryNote {
+	    +id: int ~~
+	    +user_id: int ~~
+	    +supplier_id: int ~~
+	    +date: timestamp
+	    +reference: varchar
+	    +is_active: boolean
+	    +deleted_at: timestamp
+    }
+
+    class EntryNoteDetail {
+	    +id: int ~~
+	    +entry_id: int ~~
+	    +product_id: int ~~
+	    +quantity: int
+	    +is_active: boolean
+	    +deleted_at: timestamp
+    }
+
+    class ExitNote {
+	    +id: int ~~
+	    +user_id: int ~~
+	    +customer_id: int ~~
+	    +date: timestamp
+	    +total: decimal
+	    +reference: varchar
+	    +is_active: boolean
+	    +deleted_at: timestamp
+    }
+
+    class ExitNoteDetail {
+	    +id: int ~~
+	    +exit_id: int ~~
+	    +product_id: int ~~
+	    +quantity: int
+	    +is_active: boolean
+	    +deleted_at: timestamp
+    }
+
+    Categories "1" -- "N" Products : "clasifica (total en Products, parcial en Categories)"
+    Units "1" -- "N" Products : "medido en (total en Products, parcial en Units)"
+    Users "1" -- "N" PurchaseOrder : "registra (total en PurchaseOrder, parcial en Users)"
+    Suppliers "1" -- "N" PurchaseOrder : "provee (total en PurchaseOrder, parcial en Suppliers)"
+    PurchaseOrder "1" -- "N" PurchaseOrderDetail : "contiene (total en Detail, total en Order)"
+    Products "1" -- "N" PurchaseOrderDetail : "listado en (total en Detail, parcial en Products)"
+    Users "1" -- "N" EntryNote : "registra (total en EntryNote, parcial en Users)"
+    Suppliers "1" -- "N" EntryNote : "origen de (total en EntryNote, parcial en Suppliers)"
+    EntryNote "1" -- "N" EntryNoteDetail : "contiene (total en Detail, total en EntryNote)"
+    Products "1" -- "N" EntryNoteDetail : "ingresa en (total en Detail, parcial en Products)"
+    Users "1" -- "N" ExitNote : "registra (total en ExitNote, parcial en Users)"
+    Customers "1" -- "N" ExitNote : "solicita (total en ExitNote, parcial en Customers)"
+    ExitNote "1" -- "N" ExitNoteDetail : "contiene (total en Detail, total en ExitNote)"
+    Products "1" -- "N" ExitNoteDetail : "sale en (total en Detail, parcial en Products)"
