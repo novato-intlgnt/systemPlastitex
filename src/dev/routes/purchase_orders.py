@@ -43,16 +43,63 @@ async def get_purchase_order_by_id(order_id: int, user: dict = Depends(only_user
 async def create_purchase_order(
     data: dict, user: dict = Depends(require_role("admin", "aux_compra"))
 ):
-    """Crear una nueva orden de compra"""
+    """
+    Crear una nueva orden de compra con sus detalles.
+    
+    **Roles permitidos:** admin, aux_compra
+    
+    **Body Parameters:**
+    - **supplier_id**: ID del proveedor (requerido)
+    - **status**: Estado de la orden (opcional, default: "pendiente")
+    - **details**: Array de detalles de productos (requerido, mínimo 1)
+        - **product_id**: ID del producto
+        - **quantity**: Cantidad
+        - **unit_price**: Precio unitario
+    
+    **Returns:**
+    - **status**: "success"
+    - **message**: Mensaje de confirmación
+    - **data**: Datos de la orden creada
+    """
     try:
         # Validar campos requeridos
-        required_fields = ["supplier_id", "total"]
-        for field in required_fields:
-            if field not in data:
+        if "supplier_id" not in data:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="El campo 'supplier_id' es requerido",
+            )
+        
+        # Validar que haya detalles
+        details = data.get("details", [])
+        if not details or len(details) == 0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Debe incluir al menos un producto en la orden (campo 'details')",
+            )
+        
+        # Validar cada detalle
+        for i, detail in enumerate(details):
+            if "product_id" not in detail:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"El campo '{field}' es requerido",
+                    detail=f"El detalle {i+1} no tiene 'product_id'",
                 )
+            if "quantity" not in detail or detail["quantity"] <= 0:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"El detalle {i+1} debe tener una cantidad mayor a 0",
+                )
+            if "unit_price" not in detail or detail["unit_price"] < 0:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"El detalle {i+1} debe tener un precio unitario válido",
+                )
+        
+        # Calcular el total desde los detalles
+        calculated_total = sum(
+            d["quantity"] * d["unit_price"] for d in details
+        )
+        data["total"] = calculated_total
 
         # Crear la orden de compra
         result = await PurchaseOrderRepository.create(data, user_id=user.get("userId"))
@@ -75,13 +122,54 @@ async def create_purchase_order(
 async def update_purchase_order(
     order_id: int, data: dict, user: dict = Depends(require_role("admin", "aux_compra"))
 ):
-    """Actualizar una orden de compra"""
+    """
+    Actualizar una orden de compra.
+    
+    **Roles permitidos:** admin, aux_compra
+    
+    **Path Parameters:**
+    - **order_id**: ID de la orden a actualizar
+    
+    **Body Parameters:**
+    - **supplier_id**: ID del proveedor (opcional)
+    - **status**: Estado de la orden (opcional)
+    - **details**: Array de detalles de productos (opcional, reemplaza los existentes)
+    
+    **Returns:**
+    - **status**: "success"
+    - **message**: Mensaje de confirmación
+    - **data**: Datos de la orden actualizada
+    """
     try:
         if not data:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="No hay datos para actualizar",
             )
+
+        # Si hay detalles, recalcular el total
+        details = data.get("details", [])
+        if details:
+            # Validar cada detalle
+            for i, detail in enumerate(details):
+                if "product_id" not in detail:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=f"El detalle {i+1} no tiene 'product_id'",
+                    )
+                if "quantity" not in detail or detail["quantity"] <= 0:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=f"El detalle {i+1} debe tener una cantidad mayor a 0",
+                    )
+                if "unit_price" not in detail or detail["unit_price"] < 0:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=f"El detalle {i+1} debe tener un precio unitario válido",
+                    )
+            
+            # Calcular el total desde los detalles
+            data["total"] = sum(d["quantity"] * d["unit_price"] for d in details)
 
         result = await PurchaseOrderRepository.update(order_id, data)
         if not result:

@@ -113,7 +113,7 @@ class PurchaseOrderRepository:
 
     @staticmethod
     async def update(order_id: int, data: dict):
-        """Actualizar una orden de compra"""
+        """Actualizar una orden de compra y sus detalles"""
         async with async_session_maker() as session:
             try:
                 query = select(PurchaseOrder).where(PurchaseOrder.id == order_id)
@@ -131,6 +131,25 @@ class PurchaseOrderRepository:
                     order.status = data["status"]
                 if "supplier_id" in data:
                     order.supplier_id = data["supplier_id"]
+
+                # Si hay nuevos detalles, eliminar los existentes y crear los nuevos
+                if "details" in data and data["details"]:
+                    # Eliminar detalles existentes
+                    from sqlalchemy import delete
+                    delete_stmt = delete(PurchaseOrderDetail).where(
+                        PurchaseOrderDetail.order_id == order_id
+                    )
+                    await session.execute(delete_stmt)
+                    
+                    # Crear nuevos detalles
+                    for detail in data["details"]:
+                        order_detail = PurchaseOrderDetail(
+                            order_id=order.id,
+                            product_id=detail.get("product_id"),
+                            quantity=detail.get("quantity"),
+                            unit_price=detail.get("unit_price"),
+                        )
+                        session.add(order_detail)
 
                 await session.commit()
                 await session.refresh(order)
