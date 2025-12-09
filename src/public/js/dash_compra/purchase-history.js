@@ -3,10 +3,12 @@ import { apiRequest } from "./../fetchModule.js";
 /**
  * Módulo de historial de compras (reporte)
  * Para el rol aux_compra
+ * Implementa carga perezosa (lazy loading)
  */
 
 const API = window.location.origin;
-let table;
+let table = null;
+let moduleInitialized = false;
 
 function initTable() {
   table = new Tabulator("#purchase-history-table", {
@@ -139,10 +141,29 @@ function initFilters() {
   }
 }
 
-// Inicialización
-(async function init() {
+// ============================================================================
+// INICIALIZACIÓN CON CARGA PEREZOSA
+// ============================================================================
+
+async function initPurchaseHistoryModule() {
+  // Si ya está inicializado, solo recargar datos
+  if (moduleInitialized) {
+    await loadHistory();
+    return;
+  }
+
+  // Primera inicialización
   initTable();
   initFilters();
   await loadSuppliers();
   await loadHistory();
-})();
+  
+  moduleInitialized = true;
+}
+
+/* ============================================
+   ACTIVAR CUANDO SE HAGA CLIC EN EL BOTÓN
+============================================ */
+document.getElementById("btn-history")?.addEventListener("click", () => {
+  initPurchaseHistoryModule();
+});

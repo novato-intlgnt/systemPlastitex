@@ -11,12 +11,14 @@ import {
 /**
  * Módulo de Notas de Salida (Warehouse Outbound)
  * Para el rol aux_almacen
+ * Implementa carga perezosa (lazy loading)
  */
 
 const API = window.location.origin;
-let notesTable;
-let itemsTable;
+let notesTable = null;
+let itemsTable = null;
 let currentNoteId = null;
+let moduleInitialized = false;
 
 // ============================================================================
 // TABLA DE NOTAS DE SALIDA
@@ -371,14 +373,30 @@ function initEvents() {
 }
 
 // ============================================================================
-// INICIALIZACIÓN
+// INICIALIZACIÓN CON CARGA PEREZOSA
 // ============================================================================
 
-(async function init() {
+async function initExitNotesModule() {
+  // Si ya está inicializado, solo recargar datos
+  if (moduleInitialized) {
+    await loadNotes();
+    return;
+  }
+
+  // Primera inicialización
   initNotesTable();
   initItemsTable();
   initEvents();
   await loadClients();
   await loadProducts();
   await loadNotes();
-})();
+  
+  moduleInitialized = true;
+}
+
+/* ============================================
+   ACTIVAR CUANDO SE HAGA CLIC EN EL BOTÓN
+============================================ */
+document.getElementById("btn-exit-note")?.addEventListener("click", () => {
+  initExitNotesModule();
+});

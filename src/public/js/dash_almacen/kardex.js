@@ -3,10 +3,12 @@ import { apiRequest } from "./../fetchModule.js";
 /**
  * Módulo de Kardex (Reporte de movimientos)
  * Para el rol aux_almacen
+ * Implementa carga perezosa (lazy loading)
  */
 
 const API = window.location.origin;
-let table;
+let table = null;
+let moduleInitialized = false;
 
 function initTable() {
   table = new Tabulator("#kardex-table", {
@@ -225,9 +227,28 @@ function initEvents() {
   }
 }
 
-// Inicialización
-(async function init() {
+// ============================================================================
+// INICIALIZACIÓN CON CARGA PEREZOSA
+// ============================================================================
+
+async function initKardexModule() {
+  // Si ya está inicializado, solo recargar productos
+  if (moduleInitialized) {
+    await loadProducts();
+    return;
+  }
+
+  // Primera inicialización
   initTable();
   initEvents();
   await loadProducts();
-})();
+  
+  moduleInitialized = true;
+}
+
+/* ============================================
+   ACTIVAR CUANDO SE HAGA CLIC EN EL BOTÓN
+============================================ */
+document.getElementById("btn-kardex")?.addEventListener("click", () => {
+  initKardexModule();
+});

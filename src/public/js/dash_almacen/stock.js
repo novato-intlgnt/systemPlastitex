@@ -3,10 +3,12 @@ import { apiRequest } from "./../fetchModule.js";
 /**
  * Módulo de Stock (Reporte)
  * Para el rol aux_almacen
+ * Implementa carga perezosa (lazy loading)
  */
 
 const API = window.location.origin;
-let table;
+let table = null;
+let moduleInitialized = false;
 
 function initTable() {
   table = new Tabulator("#stock-table", {
@@ -154,10 +156,29 @@ function initEvents() {
   }
 }
 
-// Inicialización
-(async function init() {
+// ============================================================================
+// INICIALIZACIÓN CON CARGA PEREZOSA
+// ============================================================================
+
+async function initStockModule() {
+  // Si ya está inicializado, solo recargar datos
+  if (moduleInitialized) {
+    await loadStock();
+    return;
+  }
+
+  // Primera inicialización
   initTable();
   initEvents();
   await loadProductsFilter();
   await loadStock();
-})();
+  
+  moduleInitialized = true;
+}
+
+/* ============================================
+   ACTIVAR CUANDO SE HAGA CLIC EN EL BOTÓN
+============================================ */
+document.getElementById("btn-stock")?.addEventListener("click", () => {
+  initStockModule();
+});

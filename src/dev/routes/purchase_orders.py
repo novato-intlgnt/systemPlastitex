@@ -43,7 +43,12 @@ async def get_purchase_order_by_id(order_id: int, user: dict = Depends(only_user
 async def create_purchase_order(
     data: dict, user: dict = Depends(require_role("admin", "aux_compra"))
 ):
-    """
+    # Opción 1: Usar el script
+    .\run_windows.ps1
+    
+    # Opción 2: Manualmente
+    .\.venv\Scripts\Activate.ps1
+    python main.py    """
     Crear una nueva orden de compra con sus detalles.
     
     **Roles permitidos:** admin, aux_compra
