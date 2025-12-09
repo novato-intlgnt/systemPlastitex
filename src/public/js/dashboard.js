@@ -4,20 +4,22 @@ const containerPopup = document.querySelector('.container-popup')
 const artistInput = document.querySelector('#artist')
 const songInput = document.querySelector('#songs')
 
-closeBtn.addEventListener('click', () => {
-  sidebar.classList.toggle('open')
-  songInput.value = ''
-  artistInput.value = ''
-  menuBtnChange()
-})
+if (closeBtn) {
+  closeBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('open')
+    if (songInput) songInput.value = ''
+    if (artistInput) artistInput.value = ''
+    menuBtnChange()
+  })
+}
 
 
 function menuBtnChange () {
   if (sidebar.classList.contains('open')) {
-    closeBtn.classList.replace('fi-rr-menu-burger', 'fi-rr-bars-staggered')// replacing the iocns class
+    if (closeBtn) closeBtn.classList.replace('fi-rr-menu-burger', 'fi-rr-bars-staggered')// replacing the iocns class
   } else {
-    closeBtn.classList.replace('fi-rr-bars-staggered', 'fi-rr-menu-burger')// replacing the iocns class
-    containerPopup.classList.remove('open')
+    if (closeBtn) closeBtn.classList.replace('fi-rr-bars-staggered', 'fi-rr-menu-burger')// replacing the iocns class
+    if (containerPopup) containerPopup.classList.remove('open')
   }
 }
 
@@ -47,11 +49,11 @@ document.addEventListener('DOMContentLoaded', async function () {
   const data = await res.json()
 
   const nameHtml = document.getElementById('user')
-  if (userName) {
+  if (userName && nameHtml && data && data.data) {
     nameHtml.innerText = data.data.fullName
   }
 
-  if (data.data && data.data.access_token) {
+  if (data && data.data && data.data.access_token) {
     localStorage.setItem("access_token", data.data.access_token);
   }
 

@@ -14,7 +14,16 @@ from src.dev.routes.reports import reportRouter
 from src.dev.routes.suppliers import supplierRouter
 from src.dev.routes.units import unitRouter
 from src.dev.routes.users import userRouter
-from src.dev.routes.warehouse import warehouseRouter
+
+try:
+    from src.dev.routes.entry_notes import router as entry_notes_router
+except ImportError:
+    entry_notes_router = None
+
+try:
+    from src.dev.routes.exit_notes import router as exit_notes_router
+except ImportError:
+    exit_notes_router = None
 
 
 def create_app():
@@ -79,7 +88,10 @@ def create_app():
     app.include_router(unitRouter)
     app.include_router(reportRouter)
     app.include_router(purchase_orders_router)
+    if entry_notes_router:
+        app.include_router(entry_notes_router)
+    if exit_notes_router:
+        app.include_router(exit_notes_router)
     app.include_router(client_router)
-    app.include_router(warehouseRouter)
 
     return app

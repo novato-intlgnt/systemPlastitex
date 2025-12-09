@@ -1,5 +1,4 @@
-import { apiRequest } from "./fetchModule.js";
-import {
+import { apiRequest } from "./fetchModule.js";import {
   openModal,
   closeModal,
   fillForm,

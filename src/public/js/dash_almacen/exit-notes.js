@@ -294,7 +294,7 @@ async function deleteItem(itemId) {
   if (!confirmed) return;
 
   try {
-    await apiRequest(`${API}/warehouse/outbound/${currentNoteId}/items/${itemId}`, "DELETE");
+    await apiRequest(`${API}/notas-salida/${currentNoteId}/items/${itemId}`, "DELETE");
     itemsTable.deleteRow(itemId);
     await loadProducts(); // Actualizar stock
     showSuccess("Producto eliminado de la nota");
