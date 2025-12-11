@@ -26,6 +26,6 @@ class ExitNote(Base):
     deleted_at = Column(DateTime, nullable=True)
 
     # Relaciones
-    user = relationship("User", back_populates="exit_notes")
-    customer = relationship("Customer", back_populates="exit_notes")
-    details = relationship("ExitNoteDetail", back_populates="exit_note", cascade="all, delete-orphan")
+    user = relationship("User")
+    customer = relationship("Customer", foreign_keys=[customer_id])
+    details = relationship("ExitNoteDetail", back_populates="exit_note")

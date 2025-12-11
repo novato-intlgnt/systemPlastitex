@@ -32,7 +32,7 @@ function initNotesTable() {
     paginationSize: 10,
     height: "45vh",
     placeholder: "No hay notas de salida",
-    rowClick: (e, row) => selectNote(row.getData()),
+    selectableRows: 1,
     columns: [
       { title: "ID", field: "id", width: 60, hozAlign: "center" },
       { 
@@ -61,16 +61,24 @@ function initNotesTable() {
         headerSort: false,
         width: 100,
         formatter: () => `
+          <button class="table-btn edit" title="Editar">
+            <i class="fi fi-rr-edit"></i>
+          </button>
+          <button class="table-btn view" title="Ver Detalles" style="background: #17a2b8;">
+            <i class="fi fi-rr-eye"></i>
+          </button>
           <button class="table-btn delete" title="Eliminar">
             <i class="fi fi-rr-trash"></i>
           </button>
         `,
         cellClick: (e, cell) => {
-          e.stopPropagation();
+          const row = cell.getRow().getData();
           const btn = e.target.closest(".table-btn");
-          if (btn?.classList.contains("delete")) {
-            deleteNote(cell.getRow().getData().id);
-          }
+          if (!btn) return;
+
+          if (btn.classList.contains("edit")) openEdit(row);
+          else if (btn.classList.contains("view")) selectNote(row);
+          else if (btn.classList.contains("delete")) deleteOrder(row.id);
         },
       },
     ],
@@ -296,7 +304,7 @@ async function deleteItem(itemId) {
   if (!confirmed) return;
 
   try {
-    await apiRequest(`${API}/warehouse/outbound/${currentNoteId}/items/${itemId}`, "DELETE");
+    await apiRequest(`${API}/notas-salida/${currentNoteId}/items/${itemId}`, "DELETE");
     itemsTable.deleteRow(itemId);
     await loadProducts(); // Actualizar stock
     showSuccess("Producto eliminado de la nota");

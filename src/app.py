@@ -14,15 +14,30 @@ from src.dev.routes.reports import reportRouter
 from src.dev.routes.suppliers import supplierRouter
 from src.dev.routes.units import unitRouter
 from src.dev.routes.users import userRouter
-from src.dev.routes.warehouse import warehouseRouter
+
+try:
+    from src.dev.routes.entry_notes import router as entry_notes_router
+except ImportError:
+    entry_notes_router = None
+
+try:
+    from src.dev.routes.exit_notes import router as exit_notes_router
+except ImportError:
+    exit_notes_router = None
 
 
 def create_app():
-    app = FastAPI(title="Plastitex Dashboard", docs_url="/docs")
+    app = FastAPI(
+        title="Plastitex Dashboard",
+        description=" Esta interfaz moderna, esencial para la capa Frontend (Vanilla JS), organiza los servicios RESTful en secciones lógicas (Autenticación, Catálogos, Transacciones y Reportes), detallando los esquemas de datos (Modelos Pydantic) y los parámetros requeridos. Además, Scalar soporta la validación de acceso basada en roles (RBAC) y documenta los códigos de respuesta HTTP, informando explícitamente sobre fallos en la lógica de negocio, como la insuficiencia de stock detectada por los procedimientos almacenados de PostgreSQL.",
+        docs_url="/docs",
+    )
 
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[
+            "http://localhost:4000",
+            "http://127.0.0.1:4000",
             "https://localhost:4000",
             "https://127.0.0.1:4000",
             "http://localhost:4000",
@@ -81,7 +96,10 @@ def create_app():
     app.include_router(unitRouter)
     app.include_router(reportRouter)
     app.include_router(purchase_orders_router)
+    if entry_notes_router:
+        app.include_router(entry_notes_router)
+    if exit_notes_router:
+        app.include_router(exit_notes_router)
     app.include_router(client_router)
-    app.include_router(warehouseRouter)
 
     return app
