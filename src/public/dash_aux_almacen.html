@@ -34,6 +34,7 @@
     <script type="module" src="/js/dash_almacen/stock.js" defer></script>
     <script type="module" src="/js/dash_almacen/kardex.js" defer></script>
     <script type="module" src="/js/dash_almacen/exit-notes.js" defer></script>
+    <script type="module" src="/js/dash_almacen/top-selling.js" defer></script>
   </head>
   <body>
     <!-- ================================================================== -->
@@ -92,6 +93,14 @@
             <span class="links_name">Nota Salida</span>
           </a>
           <span class="tooltip">Nota Salida</span>
+        </li>
+
+        <li>
+          <a href="#topSelling-section" id="btn-top-selling">
+            <i class="fi fi-rr-trophy-star"></i>
+            <span class="links_name">Top Ventas</span>
+          </a>
+          <span class="tooltip">Top Ventas</span>
         </li>
 
         <li class="profile">
@@ -587,10 +596,39 @@
       </div>
     </section>
 
-    <script src="/js/dashboard/library-utils.js"></script>
-ion"></section>
-    <section id="exitNote-section" class="home-section"></section>
+    <!-- ================================================================== -->
+    <!-- SECCIÓN: TOP VENTAS (Productos más vendidos) -->
+    <!-- ================================================================== -->
+    <section id="topSelling-section" class="home-section">
+      <div class="section-header">
+        <h2>Productos Más Vendidos</h2>
+      </div>
 
-    <script src="/js/dashboard/library-utils.js" ></script>
+      <!-- Filtros -->
+      <div class="filters-box">
+        <div class="filter-group">
+          <label>Cantidad de productos</label>
+          <select id="top-selling-limit">
+            <option value="5">Top 5</option>
+            <option value="10" selected>Top 10</option>
+            <option value="20">Top 20</option>
+            <option value="50">Top 50</option>
+          </select>
+        </div>
+        <div class="filter-actions">
+          <button id="btn-filter-top-selling" class="btn-primary">
+            <i class="fi fi-rr-filter"></i> Actualizar
+          </button>
+        </div>
+      </div>
+
+      <!-- Resumen -->
+      <div id="top-selling-summary" class="summary-box"></div>
+
+      <!-- Tabla -->
+      <div id="top-selling-table" class="data-table"></div>
+    </section>
+
+    <script src="/js/dashboard/library-utils.js"></script>
   </body>
 </html>
