@@ -381,19 +381,10 @@
     <section id="stock-section" class="home-section">
       <div class="section-header">
         <h2>Reporte de Stock</h2>
-        <button id="btn-refresh-stock" class="btn-icon">
-          <i class="fi fi-rr-refresh"></i> Actualizar
-        </button>
       </div>
 
       <!-- Filtros -->
       <div class="filters-box">
-        <div class="filter-group">
-          <label>Producto</label>
-          <select id="filter-product">
-            <option value="">Todos los productos</option>
-          </select>
-        </div>
         <div class="filter-group">
           <label>Buscar</label>
           <input
@@ -402,6 +393,21 @@
             placeholder="Buscar..."
             class="search-input"
           />
+        </div>
+        <div class="filter-group">
+          <label>Categoria *</label>
+          <select id="stock-category">
+            <option value="">Seleccione una categoria</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Unidad *</label>
+          <select id="stock-unit">
+            <option value="">Seleccione una unidad</option>
+          </select>
+        </div>
+        <div class="filter-actions">
+          <button id="btn-clear-stock" class="btn-secondary">Limpiar</button>
         </div>
       </div>
 

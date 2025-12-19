@@ -223,30 +223,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- 3.2 Stock por Categoría
-CREATE OR REPLACE FUNCTION sp_get_stock_categoria(
-    p_category_id INTEGER DEFAULT NULL
-)
-RETURNS TABLE (
-    product_id INTEGER,
-    product_name VARCHAR,
-    category_name VARCHAR,
-    unit_name VARCHAR,
-    stock INTEGER,
-    sale_price DECIMAL,
-    purchase_price DECIMAL
-) AS $$
-BEGIN
-    RETURN QUERY
-    SELECT p.id, p.name, c.name, u.name, p.stock, p.sale_price, p.purchase_price
-    FROM products p
-    JOIN categories c ON c.id = p.category_id
-    JOIN units u ON u.id = p.unit_id
-    WHERE (p_category_id IS NULL OR p.category_id = p_category_id)
-    ORDER BY c.name, p.name;
-END;
-$$ LANGUAGE plpgsql;
-
 -- 3.3 Historial de Compras
 CREATE OR REPLACE FUNCTION sp_get_purchase_history(
     p_supplier_id INTEGER,
@@ -335,8 +311,9 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- 3.6 Stock Detallado por Producto
-CREATE OR REPLACE FUNCTION sp_get_stock_by_product(
-    prod_id INT DEFAULT NULL
+CREATE OR REPLACE FUNCTION sp_get_current_stock (
+    p_cat_id INT DEFAULT NULL,
+    p_unit_id INT DEFAULT NULL
 )
 RETURNS TABLE (
     product_id INT,
@@ -354,28 +331,29 @@ BEGIN
     SELECT 
         p.id, 
         p.name, 
-        COALESCE(c.name, 'Sin categoría') as category_name,  -- Maneja NULL
-        COALESCE(u.name, 'Sin unidad') as unit_name,         -- Maneja NULL
+        COALESCE(c.name, 'Sin categoría') as category_name,
+        COALESCE(u.name, 'Sin unidad') as unit_name,
         p.stock,
         COALESCE((
             SELECT SUM(e.quantity)
             FROM entry_note_detail e
             WHERE e.product_id = p.id 
               AND e.is_active = TRUE
-        ), 0)::BIGINT,
+        ), 0)::BIGINT as total_entries,
         COALESCE((
             SELECT SUM(x.quantity)
             FROM exit_note_detail x
             WHERE x.product_id = p.id 
               AND x.is_active = TRUE
-        ), 0)::BIGINT,
+        ), 0)::BIGINT as total_exits,
         COALESCE(p.purchase_price, 0)::NUMERIC(10,2),
         COALESCE(p.sale_price, 0)::NUMERIC(10,2)
     FROM products p
-    LEFT JOIN categories c ON p.category_id = c.id  -- LEFT JOIN por si no tiene categoría
-    LEFT JOIN units u ON p.unit_id = u.id          -- LEFT JOIN por si no tiene unidad
+    LEFT JOIN categories c ON p.category_id = c.id
+    LEFT JOIN units u ON p.unit_id = u.id
     WHERE p.is_active = TRUE 
-      AND (prod_id IS NULL OR p.id = prod_id)
+      AND (p_cat_id IS NULL OR p.category_id = p_cat_id)
+      AND (p_unit_id IS NULL OR p.unit_id = p_unit_id) -- Aquí se resuelve la ambigüedad
     ORDER BY p.name;
 END;
 $$ LANGUAGE plpgsql;

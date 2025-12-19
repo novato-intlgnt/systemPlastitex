@@ -26,10 +26,13 @@ except ImportError:
     exit_notes_router = None
 
 
+DESCRIPTION = "Esta interfaz moderna, esencial para la capa Frontend (Vanilla JS), organiza los servicios RESTful en secciones lógicas (Autenticación, Catálogos, Transacciones y Reportes), detallando los esquemas de datos (Modelos Pydantic) y los parámetros requeridos. Además, Scalar soporta la validación de acceso basada en roles (RBAC) y documenta los códigos de respuesta HTTP, informando explícitamente sobre fallos en la lógica de negocio, como la insuficiencia de stock detectada por los procedimientos almacenados de PostgreSQL."
+
+
 def create_app():
     app = FastAPI(
         title="Plastitex Dashboard",
-        description=" Esta interfaz moderna, esencial para la capa Frontend (Vanilla JS), organiza los servicios RESTful en secciones lógicas (Autenticación, Catálogos, Transacciones y Reportes), detallando los esquemas de datos (Modelos Pydantic) y los parámetros requeridos. Además, Scalar soporta la validación de acceso basada en roles (RBAC) y documenta los códigos de respuesta HTTP, informando explícitamente sobre fallos en la lógica de negocio, como la insuficiencia de stock detectada por los procedimientos almacenados de PostgreSQL.",
+        description=DESCRIPTION,
         docs_url="/docs",
     )
 
@@ -75,7 +78,6 @@ def create_app():
             layout=Layout.MODERN,
             dark_mode=True,
             show_sidebar=True,
-            default_open_all_tags=True,
             hide_download_button=False,
             hide_models=False,
         )

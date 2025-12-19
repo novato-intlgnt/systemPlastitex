@@ -317,7 +317,8 @@ class ReportController:
     async def get_stock_aux_almacen(
         self,
         current_role: str,
-        product_id: Optional[int] = None,
+        category_id: Optional[int] = None,
+        unit_id: Optional[int] = None,
     ):
         """
         Stock para Aux Almacén - Con filtro opcional por producto.
@@ -334,7 +335,10 @@ class ReportController:
         self._check_role(current_role, ["aux_almacen", "admin"])
 
         try:
-            data = await self.report_repositorie.get_stock_by_product(product_id)
+            data = await self.report_repositorie.get_stock_by_product(
+                category_id, unit_id
+            )
+            print(category_id, unit_id)
             result_list = []
             for product in data:
                 result_list.append(

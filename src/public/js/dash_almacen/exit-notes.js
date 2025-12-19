@@ -51,7 +51,7 @@ function initNotesTable() {
         width: 110, 
         hozAlign: "right",
         formatter: "money",
-        formatterParams: { symbol: "Bs. ", precision: 2 }
+        formatterParams: { symbol: "$/. ", precision: 2 }
       },
       { title: "Referencia", field: "reference", width: 120 },
       { title: "Items", field: "items_count", width: 70, hozAlign: "center" },
@@ -59,7 +59,7 @@ function initNotesTable() {
         title: "Acciones",
         hozAlign: "center",
         headerSort: false,
-        width: 100,
+        width: 150,
         formatter: () => `
           <button class="table-btn edit" title="Editar">
             <i class="fi fi-rr-edit"></i>

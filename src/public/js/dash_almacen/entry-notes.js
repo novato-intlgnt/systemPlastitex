@@ -51,7 +51,7 @@ function initNotesTable() {
         title: "Acciones",
         hozAlign: "center",
         headerSort: false,
-        width: 100,
+        width: 150,
         formatter: () => `
           <button class="table-btn edit" title="Editar">
             <i class="fi fi-rr-edit"></i>

@@ -6,7 +6,7 @@ from src.dev.controllers.reports import ReportController
 from src.dev.middlewares.auth import only_user
 from src.dev.repositories.report import ReportRepositorie
 
-reportRouter = APIRouter(prefix="/reports", tags=["Reports"])
+reportRouter = APIRouter(prefix="/reports")
 
 # Inyección de dependencias
 report_repositorie = ReportRepositorie()
@@ -140,44 +140,15 @@ async def get_kardex_by_product(
 
 
 @reportRouter.get(
-    "/aux-almacen/stock/{product_id}",
-    summary="R4. Stock Actual - Stock de productos por categoría",
-    tags=["Reports - Aux Almacén"],
-)
-async def get_stock_by_product_id(
-    product_id: int,
-    category_id: Optional[int] = Query(
-        None, description="ID de la categoría (opcional)"
-    ),
-    user_role: str = Depends(get_current_role),
-):
-    """
-    Obtiene el stock actual de productos, opcionalmente filtrado por categoría.
-
-    - **product_id**: ID del producto a consultar.
-    - **category_id**: ID de la categoría (opcional).
-
-    **Roles permitidos**: aux_almacen, admin
-
-    **Returns:**
-    - Información del producto con:
-      - product_id, product_name
-      - category_id, category_name
-      - unit_id, unit_name
-      - stock, sale_price, purchase_price
-      - total_entries (total de entradas)
-      - total_exits (total de salidas)
-    """
-    return await report_controller.get_stock_aux_almacen(user_role, product_id)
-
-
-@reportRouter.get(
     "/aux-almacen/stock",
-    summary="R5. Stock de productos para Aux Almacén",
+    summary="R4. Stock de productos para Aux Almacén",
     tags=["Reports - Aux Almacén"],
 )
 async def get_stock_aux_almacen(
-    product_id: Optional[int] = Query(None, description="ID del producto (opcional)"),
+    category_id: Optional[int] = Query(
+        None, description="ID de la categoria (opcional)"
+    ),
+    unit_id: Optional[int] = Query(None, description="ID de la unidad (opcional)"),
     user_role: str = Depends(get_current_role),
 ):
     """
@@ -199,12 +170,15 @@ async def get_stock_aux_almacen(
       - total_entries (total de entradas)
       - total_exits (total de salidas)
     """
-    return await report_controller.get_stock_aux_almacen(user_role, product_id)
+    return await report_controller.get_stock_aux_almacen(
+        user_role, category_id, unit_id
+    )
 
 
 @reportRouter.get(
     "/top_selling",
     summary="R6. Productos Más Vendidos - Top de productos por cantidad vendida",
+    tags=["Reports - Aux Almacén"],
 )
 async def get_top_selling(
     limit: int = Query(10, description="Número máximo de productos a retornar"),

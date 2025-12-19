@@ -207,17 +207,22 @@ class ReportRepositorie:
 
     @staticmethod
     async def get_stock_by_product(
-        product_id: Optional[int] = None,
+        category_id: Optional[int] = None,
+        unit_id: Optional[int] = None,
         poolDB: async_sessionmaker[AsyncSession] = async_session_maker,
     ) -> list[dict]:
         """
-        Stock por Producto - Obtiene el stock de un producto específico o todos.
-        Delega a la función de BD sp_get_stock_by_product (nueva función creada).
+        R2. Stock Actual - Obtiene el stock actual de productos por categoría.
+        Delega a la función de BD sp_get_current_stock.
         """
-        params = {"prod_id": product_id}
+        print(category_id, unit_id)
+        params = {
+            "p_cat_id": category_id,
+            "p_unit_id": unit_id,
+        }
 
         return await ReportRepositorie._execute_sp(
-            "sp_get_stock_by_product", params, poolDB
+            "sp_get_current_stock", params, poolDB
         )
 
     @staticmethod

@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from src.dev.config.db import async_session_maker
 from src.dev.models.category import Category
+from src.dev.models.product import Product
 
 
 class CategoryRepository:
@@ -31,7 +32,13 @@ class CategoryRepository:
     @staticmethod
     async def get_all(poolDB: async_sessionmaker[AsyncSession] = async_session_maker):
         async with poolDB() as session:
-            query = select(Category).where(Category.is_active == True)
+            query = (
+                select(Category)
+                .join(Product, Category.id == Product.category_id)
+                .where(Category.is_active == True)
+                .where(Product.is_active == True)
+                .distinct()
+            )
             result = await session.execute(query)
 
         categories = result.scalars().all()

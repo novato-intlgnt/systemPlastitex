@@ -70,13 +70,17 @@ function initTable() {
 
 async function loadStock() {
   try {
-    const productId = document.getElementById("filter-product")?.value || "";
-    let url = `${API}/reports/aux-almacen/stock`;
-    if (productId) url += `?product_id=${productId}`;
+    const cateogryId = document.getElementById("stock-category")?.value || "";
+    const unitId = document.getElementById("stock-unit")?.value || "";
+    let url = new URL(`${API}/reports/aux-almacen/stock`);
+    if (cateogryId) url.searchParams.append('category_id', cateogryId);
+    if (unitId) url.searchParams.append('unit_id', unitId);
     
-    const res = await apiRequest(url);
+    const res = await apiRequest(url.toString());
     const data = res.data || [];
     table.replaceData(data);
+
+    console.log(data);
     
     updateSummary(data);
   } catch (error) {
@@ -120,19 +124,38 @@ function updateSummary(data) {
   }
 }
 
-async function loadProductsFilter() {
+async function loadSelectOptions() {
   try {
-    const res = await apiRequest(`${API}/product`);
-    const products = res.products || [];
-    const select = document.getElementById("filter-product");
-    if (select) {
-      select.innerHTML = '<option value="">Todos los productos</option>' +
-        products.map(p => `<option value="${p.id}">${p.name}</option>`).join("");
+    const [catRes, unitRes] = await Promise.all([
+      apiRequest(`${API}/category`),
+      apiRequest(`${API}/unit`)
+    ]);
+
+    const categories = catRes.categories || [];
+    const units = unitRes.units || [];
+
+    const catSelect = document.getElementById("stock-category");
+    const unitSelect = document.getElementById("stock-unit");
+
+    if (catSelect) {
+      catSelect.innerHTML = `
+        <option value="">Todas las categorias</option>
+        ${categories.map(c => `<option value="${c.id}">${c.name}</option>`).join("")}
+      `;
+    }
+
+    if (unitSelect) {
+      unitSelect.innerHTML = `
+        <option value="">Todas las unidades</option>
+        ${units.map(u => `<option value="${u.id}">${u.name}</option>`).join("")}
+      `;
     }
   } catch (error) {
-    console.error("Error cargando productos:", error);
+    console.error("Error cargando opciones:", error);
   }
 }
+
+
 
 function initEvents() {
   // Búsqueda
@@ -143,16 +166,28 @@ function initEvents() {
     });
   }
 
-  // Filtro por producto
-  const filterProduct = document.getElementById("filter-product");
-  if (filterProduct) {
-    filterProduct.addEventListener("change", loadStock);
+  const productSelect = document.getElementById("filter-product");
+  if (productSelect) {
+    productSelect.addEventListener("change", loadStock);
   }
 
-  // Botón refrescar
-  const btnRefresh = document.getElementById("btn-refresh-stock");
-  if (btnRefresh) {
-    btnRefresh.addEventListener("click", loadStock);
+  const catSelect = document.getElementById("stock-category");
+  if (catSelect) {
+    catSelect.addEventListener("change", loadStock);
+  }
+  const unitSelect = document.getElementById("stock-unit");
+  if (unitSelect) {
+    unitSelect.addEventListener("change", loadStock);
+  }
+
+  // Botón limpiar filtros
+  const btnClear = document.getElementById("btn-clear-stock");
+  if (btnClear) {
+    btnClear.addEventListener("click", () => {
+      document.getElementById("stock-category").value = "";
+      document.getElementById("stock-unit").value = "";
+      loadStock();
+    });
   }
 }
 
@@ -161,16 +196,14 @@ function initEvents() {
 // ============================================================================
 
 async function initStockModule() {
-  // Si ya está inicializado, solo recargar datos
   if (moduleInitialized) {
     await loadStock();
     return;
   }
 
-  // Primera inicialización
   initTable();
   initEvents();
-  await loadProductsFilter();
+  await loadSelectOptions();
   await loadStock();
   
   moduleInitialized = true;
