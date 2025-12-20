@@ -8,12 +8,6 @@ import {
   setupEscapeClose,
 } from "./../modalModule.js";
 
-/**
- * Módulo de Notas de Ingreso (Warehouse Inbound)
- * Para el rol aux_almacen
- * Implementa carga perezosa (lazy loading)
- */
-
 const API = window.location.origin;
 let notesTable = null;
 let itemsTable = null;
@@ -116,10 +110,6 @@ function initItemsTable() {
     ],
   });
 }
-
-// ============================================================================
-// CARGAR DATOS
-// ============================================================================
 
 async function loadSuppliers() {
   try {
@@ -346,18 +336,12 @@ function initEvents() {
   setupEscapeClose("entry-item-modal");
 }
 
-// ============================================================================
-// INICIALIZACIÓN CON CARGA PEREZOSA
-// ============================================================================
-
 async function initEntryNotesModule() {
-  // Si ya está inicializado, solo recargar datos
   if (moduleInitialized) {
     await loadNotes();
     return;
   }
 
-  // Primera inicialización
   initNotesTable();
   initItemsTable();
   initEvents();
@@ -368,9 +352,6 @@ async function initEntryNotesModule() {
   moduleInitialized = true;
 }
 
-/* ============================================
-   ACTIVAR CUANDO SE HAGA CLIC EN EL BOTÓN
-============================================ */
 document.getElementById("btn-entry-note")?.addEventListener("click", () => {
   initEntryNotesModule();
 });

@@ -1,11 +1,5 @@
 import { apiRequest } from "./../fetchModule.js";
 
-/**
- * Módulo de Stock (Reporte)
- * Para el rol aux_almacen
- * Implementa carga perezosa (lazy loading)
- */
-
 const API = window.location.origin;
 let table = null;
 let moduleInitialized = false;
@@ -191,10 +185,6 @@ function initEvents() {
   }
 }
 
-// ============================================================================
-// INICIALIZACIÓN CON CARGA PEREZOSA
-// ============================================================================
-
 async function initStockModule() {
   if (moduleInitialized) {
     await loadStock();
@@ -209,9 +199,6 @@ async function initStockModule() {
   moduleInitialized = true;
 }
 
-/* ============================================
-   ACTIVAR CUANDO SE HAGA CLIC EN EL BOTÓN
-============================================ */
 document.getElementById("btn-stock")?.addEventListener("click", () => {
   initStockModule();
 });

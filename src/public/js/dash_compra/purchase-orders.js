@@ -9,21 +9,13 @@ import {
   setupEscapeClose,
 } from "./../modalModule.js";
 
-/**
- * Módulo de órdenes de compra (CRUD)
- * Para el rol aux_compra
- * Implementa carga perezosa (lazy loading)
- */
-
 const API = window.location.origin;
 let table = null;
 let isEditing = false;
 let currentEditId = null;
 let moduleInitialized = false;
 
-// Array para almacenar los detalles de productos de la orden actual
 let orderDetails = [];
-// Cache de productos para obtener info rápidamente
 let productsCache = [];
 
 function initTable() {
@@ -533,18 +525,12 @@ function initEvents() {
   if (btnCloseDetail) btnCloseDetail.addEventListener("click", () => closeModal("order-detail-modal"));
 }
 
-// ============================================================================
-// INICIALIZACIÓN CON CARGA PEREZOSA
-// ============================================================================
-
 async function initPurchaseOrdersModule() {
-  // Si ya está inicializado, solo recargar datos
   if (moduleInitialized) {
     await loadOrders();
     return;
   }
 
-  // Primera inicialización
   initTable();
   initEvents();
   await loadSuppliers();
@@ -554,9 +540,6 @@ async function initPurchaseOrdersModule() {
   moduleInitialized = true;
 }
 
-/* ============================================
-   ACTIVAR CUANDO SE HAGA CLIC EN EL BOTÓN
-============================================ */
 document.getElementById("btn-orders")?.addEventListener("click", () => {
   initPurchaseOrdersModule();
 });

@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from decimal import Decimal
 from typing import Any, Optional
 
 from sqlalchemy import select, text
@@ -53,30 +54,11 @@ class ReportRepositorie:
                 for key, value in row_dict.items():
                     if hasattr(value, "isoformat"):
                         row_dict[key] = value.isoformat()
-
+                    if isinstance(value, Decimal):
+                        row_dict[key] = float(value)
                 final_rows.append(row_dict)
 
             return final_rows
-
-    # Se mantiene el método auxiliar _execute_dynamic_query ya que no fue solicitado modificarlo,
-    # aunque no se usará en los métodos principales de reporte.
-    @staticmethod
-    async def _execute_dynamic_query(
-        query: str,
-        params: dict[str, Any],
-        poolDB: async_sessionmaker[AsyncSession] = async_session_maker,
-    ) -> list[dict]:
-        """
-        Método auxiliar para ejecutar queries dinámicas.
-        """
-        async with poolDB() as session:
-            result = await session.execute(text(query), params)
-            rows = result.fetchall()
-
-            if rows:
-                columns = result.keys()
-                return [dict(zip(columns, row)) for row in rows]
-            return []
 
     @staticmethod
     async def get_kardex_data(
@@ -109,7 +91,6 @@ class ReportRepositorie:
         Delega a la función de BD sp_get_stock_categoria.
         """
         params = {"p_category_id": category_id}
-        # Usa el nombre de la función en minúsculas
         return await ReportRepositorie._execute_sp(
             "sp_get_stock_categoria", params, poolDB
         )
@@ -139,7 +120,6 @@ class ReportRepositorie:
             "p_start_date": start_date_parsed,
             "p_end_date": end_date_parsed,
         }
-        # Usa el nombre de la función en minúsculas
         return await ReportRepositorie._execute_sp(
             "sp_get_purchase_history", params, poolDB
         )
@@ -154,7 +134,6 @@ class ReportRepositorie:
         Delega a la función de BD sp_get_top_selling.
         """
         params = {"p_limit": limit}
-        # Usa el nombre de la función en minúsculas
         return await ReportRepositorie._execute_sp("sp_get_top_selling", params, poolDB)
 
     @staticmethod
@@ -167,13 +146,7 @@ class ReportRepositorie:
         Delega a la función de BD sp_get_low_stock (que incluye el último proveedor).
         """
         params = {"p_stock_threshold": threshold}
-        # Usa el nombre de la función en minúsculas
         return await ReportRepositorie._execute_sp("sp_get_low_stock", params, poolDB)
-
-    # ==========================================================================
-    # NUEVOS MÉTODOS MANTENIDOS POR SOLICITUD DEL USUARIO, PERO ACTUALIZADOS
-    # PARA USAR LAS FUNCIONES DE BD CUANDO CORRESPONDE.
-    # ==========================================================================
 
     @staticmethod
     async def get_low_stock_dynamic(

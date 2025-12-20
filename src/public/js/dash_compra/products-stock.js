@@ -1,11 +1,5 @@
 import { apiRequest } from "./../fetchModule.js";
 
-/**
- * Módulo de visualización de productos/stock (solo lectura)
- * Para el rol aux_compra - ve el stock actual sin poder modificar
- * Implementa carga perezosa (lazy loading)
- */
-
 const API = window.location.origin;
 let table = null;
 let moduleInitialized = false;
@@ -95,19 +89,13 @@ async function loadLowStock() {
   }
 }
 
-// ============================================================================
-// INICIALIZACIÓN CON CARGA PEREZOSA
-// ============================================================================
-
 async function initProductsStockModule() {
-  // Si ya está inicializado, solo recargar datos
   if (moduleInitialized) {
     await loadProducts();
     await loadLowStock();
     return;
   }
 
-  // Primera inicialización
   initTable();
   initSearch();
   await loadProducts();
@@ -116,9 +104,6 @@ async function initProductsStockModule() {
   moduleInitialized = true;
 }
 
-/* ============================================
-   ACTIVAR CUANDO SE HAGA CLIC EN EL BOTÓN
-============================================ */
 document.getElementById("btn-products-stock")?.addEventListener("click", () => {
   initProductsStockModule();
 });

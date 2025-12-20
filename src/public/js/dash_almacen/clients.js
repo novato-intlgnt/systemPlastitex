@@ -1,20 +1,13 @@
 import { TableModule } from "./../tableModule.js";
 
-/**
- * Módulo de clientes (CRUD)
- * Para el rol aux_almacen
- * Implementa carga perezosa (lazy loading)
- */
-
 let clientsTable = null;
 
 function initClientsModule() {
   if (clientsTable) {
-    clientsTable.reload();
+    clientsTable.loadData();
     return;
   }
 
-  // Crear tabla por primera vez
   clientsTable = new TableModule({
     tableId: "#clients-table",
     searchInputId: "client-search",

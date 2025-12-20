@@ -8,12 +8,6 @@ import {
   setupEscapeClose,
 } from "./../modalModule.js";
 
-/**
- * Módulo de Notas de Salida (Warehouse Outbound)
- * Para el rol aux_almacen
- * Implementa carga perezosa (lazy loading)
- */
-
 const API = window.location.origin;
 let notesTable = null;
 let itemsTable = null;
@@ -274,7 +268,6 @@ async function submitItem(e) {
     quantity: parseInt(formData.get("quantity"))
   };
 
-  // Validar stock antes de enviar (solo para nuevos items)
   if (!editingItemId) {
     const isValid = await validateStock();
     if (!isValid) return;
@@ -380,18 +373,12 @@ function initEvents() {
   setupEscapeClose("exit-item-modal");
 }
 
-// ============================================================================
-// INICIALIZACIÓN CON CARGA PEREZOSA
-// ============================================================================
-
 async function initExitNotesModule() {
-  // Si ya está inicializado, solo recargar datos
   if (moduleInitialized) {
     await loadNotes();
     return;
   }
 
-  // Primera inicialización
   initNotesTable();
   initItemsTable();
   initEvents();
@@ -402,9 +389,6 @@ async function initExitNotesModule() {
   moduleInitialized = true;
 }
 
-/* ============================================
-   ACTIVAR CUANDO SE HAGA CLIC EN EL BOTÓN
-============================================ */
 document.getElementById("btn-exit-note")?.addEventListener("click", () => {
   initExitNotesModule();
 });

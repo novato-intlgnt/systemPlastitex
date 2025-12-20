@@ -1,11 +1,5 @@
 import { apiRequest } from "./../fetchModule.js";
 
-/**
- * Módulo de Top Ventas (Reporte)
- * Para el rol aux_almacen
- * Implementa carga perezosa (lazy loading)
- */
-
 const API = window.location.origin;
 let table = null;
 let moduleInitialized = false;
@@ -35,9 +29,9 @@ function initTable() {
         }
       },
       { title: "ID", field: "product_id", width: 60, hozAlign: "center" },
-      { title: "Producto", field: "product_name", minWidth: 180 },
-      { title: "Categoría", field: "category_name", minWidth: 120 },
-      { title: "Unidad", field: "unit_name", width: 90, hozAlign: "center" },
+      { title: "Producto", field: "product_name", minWidth: 140 },
+      { title: "Categoría", field: "category_name", width: 100 },
+      { title: "Unidad", field: "unit_name", width: 100, hozAlign: "center" },
       { 
         title: "Total Vendido", 
         field: "total_sold", 

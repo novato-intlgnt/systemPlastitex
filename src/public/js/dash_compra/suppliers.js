@@ -4,7 +4,7 @@ let supplierTable = null;
 
 function initSupplierModule() {
   if (supplierTable){
-    supplierTable.reload();
+    supplierTable.loadData();
     return;
   }
 

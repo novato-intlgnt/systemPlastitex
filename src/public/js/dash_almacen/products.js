@@ -3,9 +3,6 @@ import { apiRequest } from "./../fetchModule.js";
 
 const API = window.location.origin;
 
-/* ============================================
-   CARGA CATEGORÍAS Y UNIDADES
-============================================ */
 async function loadSelectOptions() {
   try {
     const [catRes, unitRes] = await Promise.all([
@@ -37,18 +34,13 @@ async function loadSelectOptions() {
   }
 }
 
-/* ============================================
-   INICIALIZAR MÓDULO DE PRODUCTOS
-============================================ */
 let productsTable = null; // evita instancias duplicadas
 
 function initProductsModule() {
-  // refrescar selects
   loadSelectOptions();
   
-  // Si ya existe la tabla, solo recargar sus datos
   if (productsTable) {
-    productsTable.reload();
+    productsTable.loadData();
     return;
   }
 
