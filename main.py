@@ -1,3 +1,7 @@
+import os
+
+import uvicorn
+
 from src.app import create_app
 from src.dev.models import *  # importar todos los modelos
 
@@ -5,6 +9,6 @@ from src.dev.models import *  # importar todos los modelos
 app = create_app()
 
 if __name__ == "__main__":
-    import uvicorn
+    port = int(os.getenv("PORT", 4000))
 
-    uvicorn.run("main:app", host="0.0.0.0", port=4000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
