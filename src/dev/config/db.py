@@ -6,9 +6,19 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 load_dotenv()
 
+DATABASE_URL: str
+raw_url = os.getenv("DATABASE_URL")
+if raw_url:
+    if raw_url.startswith("postgres://"):
+        DATABASE_URL = raw_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+    else:
+        DATABASE_URL = raw_url
+else:
+    DATABASE_URL = os.getenv("DB_URL")
+
 # Crear engine asíncrono
 engine = create_async_engine(
-    os.getenv("DB_URL"),
+    DATABASE_URL,
     echo=False,
     future=True,
     pool_pre_ping=True,
