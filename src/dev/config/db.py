@@ -8,8 +8,8 @@ load_dotenv()
 
 # Crear engine asíncrono
 engine = create_async_engine(
-    os.getenv("DATABASE_URL"),
-    echo=True,  # Cambiar a False en producción
+    os.getenv("DB_URL"),
+    echo=False,
     future=True,
     pool_pre_ping=True,
 )
