@@ -9,7 +9,7 @@ load_dotenv()
 raw_url = os.getenv("DATABASE_URL")
 print(raw_url)
 if raw_url:
-    if raw_url.startswith("postgres://"):
+    if raw_url.startswith("postgresql://"):
         DATABASE_URL = raw_url.replace("postgresql://", "postgresql+asyncpg://", 1)
     else:
         DATABASE_URL = raw_url
