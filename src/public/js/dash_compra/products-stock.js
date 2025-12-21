@@ -1,6 +1,6 @@
 import { apiRequest } from "./../fetchModule.js";
 
-const API = window.location.origin;
+const API = window.env?.API_URL || window.location.origin;
 let table = null;
 let moduleInitialized = false;
 

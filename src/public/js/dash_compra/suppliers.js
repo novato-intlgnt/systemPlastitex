@@ -8,6 +8,7 @@ function initSupplierModule() {
     return;
   }
 
+  const API = window.env?.API_URL || window.location.origin;
   new TableModule({
     tableId: "#supplier-table",
     searchInputId: "supplier-search",
@@ -16,7 +17,7 @@ function initSupplierModule() {
     btnAddId: "btn-add-supplier",
     btnCancelId: "btn-cancel",
     modalTitleId: "modal-title",
-    apiBase: `${window.location.origin}/supplier`,
+    apiBase: `${API}/supplier`,
 
     columns: [
       { title: "ID", field: "id", width: 70 },

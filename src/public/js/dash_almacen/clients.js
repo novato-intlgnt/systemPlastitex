@@ -8,6 +8,7 @@ function initClientsModule() {
     return;
   }
 
+  const API = window.env?.API_URL || window.location.origin;
   clientsTable = new TableModule({
     tableId: "#clients-table",
     searchInputId: "client-search",
@@ -16,7 +17,7 @@ function initClientsModule() {
     btnAddId: "btn-add-client",
     btnCancelId: "btn-cancel-client",
     modalTitleId: "modal-title-client",
-    apiBase: `${window.location.origin}/clients`,
+    apiBase: `${API}/clients`,
 
     columns: [
       { title: "ID", field: "id", width: 70, hozAlign: "center" },

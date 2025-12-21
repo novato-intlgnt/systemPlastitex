@@ -8,7 +8,7 @@ import {
   setupEscapeClose,
 } from "./../modalModule.js";
 
-const API = window.location.origin;
+const API = window.env?.API_URL || window.location.origin;
 let notesTable = null;
 let itemsTable = null;
 let currentNoteId = null;

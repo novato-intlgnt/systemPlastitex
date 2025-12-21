@@ -68,7 +68,7 @@ async function handleRegister(event) {
     return showAlert("Las contraseñas no coinciden", "error");
   }
 
-  const url = window.location.origin;
+  const url = window.env?.API_URL || window.location.origin;
 
   showAlert("Registrando usuario...", "success");
 
