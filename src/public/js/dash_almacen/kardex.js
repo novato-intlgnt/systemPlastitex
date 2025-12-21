@@ -67,7 +67,7 @@ function initTable() {
 
 async function loadProducts() {
   try {
-    const res = await apiRequest(`${API}/product`);
+    const res = await apiRequest(`${API}/product/`);
     const products = res.products || [];
     const select = document.getElementById("kardex-product");
     if (select) {

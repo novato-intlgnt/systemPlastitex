@@ -56,7 +56,7 @@ function initTable() {
 
 async function loadSuppliers() {
   try {
-    const res = await apiRequest(`${API}/supplier`);
+    const res = await apiRequest(`${API}/supplier/`);
     const suppliers = res.suppliers || [];
     const select = document.getElementById("filter-supplier");
     if (select) {

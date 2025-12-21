@@ -121,8 +121,8 @@ function updateSummary(data) {
 async function loadSelectOptions() {
   try {
     const [catRes, unitRes] = await Promise.all([
-      apiRequest(`${API}/category`),
-      apiRequest(`${API}/unit`)
+      apiRequest(`${API}/category/`),
+      apiRequest(`${API}/unit/`)
     ]);
 
     const categories = catRes.categories || [];

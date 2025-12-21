@@ -125,7 +125,7 @@ function initItemsTable() {
 
 async function loadClients() {
   try {
-    const res = await apiRequest(`${API}/clients`);
+    const res = await apiRequest(`${API}/clients/`);
     const clients = res.data || [];
     const select = document.getElementById("exit-customer");
     if (select) {
@@ -139,7 +139,7 @@ async function loadClients() {
 
 async function loadProducts() {
   try {
-    const res = await apiRequest(`${API}/product`);
+    const res = await apiRequest(`${API}/product/`);
     const products = res.products || [];
     const select = document.getElementById("exit-item-product");
     if (select) {
