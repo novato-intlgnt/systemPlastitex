@@ -67,7 +67,7 @@ class UserController:
                 key="user",
                 value=auth_user["auth"],
                 httponly=True,
-                samesite="lax",
+                samesite="none",
                 secure=True,
                 path="/",
                 max_age=int(os.getenv("JWT_COOKIE_EXPIRATION", "3600")),

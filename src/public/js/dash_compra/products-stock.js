@@ -1,8 +1,7 @@
 import { apiRequest } from "./../fetchModule.js";
 
-// const API = window.env?.API_URL || window.location.origin;
+const API = window.env?.API_URL || window.location.origin;
 
-const API = "https://systemplastitex-production.up.railway.app"
 console.log(window.env);
 let table = null;
 let moduleInitialized = false;

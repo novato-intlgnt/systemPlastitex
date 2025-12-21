@@ -40,17 +40,12 @@ def create_app():
         CORSMiddleware,
         allow_origins=[
             "https://systemplastitex-production.up.railway.app",
-            "http://systemplastitex-production.up.railway.app",
-            "http://localhost:4000",
-            "http://127.0.0.1:4000",
-            "https://localhost:4000",
-            "https://127.0.0.1:4000",
             "http://localhost:4000",
             "http://127.0.0.1:4000",
         ],
         allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_methods=["GET", "POST", "PUT", "DELETE"],
+        allow_headers=["Authorization", "Content-Type"],
     )
 
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
