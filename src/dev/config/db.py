@@ -7,7 +7,6 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 load_dotenv()
 
 raw_url = os.getenv("DATABASE_URL")
-print(raw_url)
 if raw_url:
     if raw_url.startswith("postgresql://"):
         DATABASE_URL = raw_url.replace("postgresql://", "postgresql+asyncpg://", 1)
@@ -16,8 +15,6 @@ if raw_url:
 else:
     DATABASE_URL = os.getenv("DB_URL")
 
-# Crear engine asíncrono
-print(DATABASE_URL)
 engine = create_async_engine(
     DATABASE_URL,
     echo=False,

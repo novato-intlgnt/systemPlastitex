@@ -33,7 +33,7 @@ async def access_dashboard(name: str, user=Depends(only_user)):
 
 
 @userRouter.get(
-    "/{name}/",
+    "/{name}",
     summary="Get user's token",
     response_class=HTMLResponse,
 )
