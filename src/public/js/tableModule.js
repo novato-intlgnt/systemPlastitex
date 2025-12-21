@@ -106,7 +106,7 @@ export class TableModule {
 
   async loadData() {
     try {
-      const res = await apiRequest(this.apiBase);
+      const res = await apiRequest(`${this.apiBase}/`);
       const items = this.mapResponse(res);
       this.table.replaceData(items);
     } catch (error) {
