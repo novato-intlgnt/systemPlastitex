@@ -39,6 +39,7 @@ def create_app():
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[
+            "https://systemplastitex-production.up.railway.app",
             "http://localhost:4000",
             "http://127.0.0.1:4000",
             "https://localhost:4000",
