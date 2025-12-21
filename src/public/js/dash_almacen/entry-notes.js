@@ -141,7 +141,7 @@ async function loadProducts() {
 
 async function loadNotes() {
   try {
-    const res = await apiRequest(`${API}/warehouse/inbound`);
+    const res = await apiRequest(`${API}/warehouse/inbound/`);
     const notes = res.data || [];
     notesTable.replaceData(notes);
   } catch (error) {
