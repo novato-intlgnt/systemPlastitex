@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   const userName = parts[2]
 
   const url = window.env?.API_URL || window.location.origin;
-  const res = await fetch(`${url}/user/${userName}`)
+  const res = await fetch(`/user/${userName}`)
   const data = await res.json()
 
   const nameHtml = document.getElementById('user')
