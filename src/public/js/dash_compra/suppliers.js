@@ -17,7 +17,8 @@ function initSupplierModule() {
     btnAddId: "btn-add-supplier",
     btnCancelId: "btn-cancel",
     modalTitleId: "modal-title",
-    apiBase: `${API}/supplier`,
+    // apiBase: `${API}/supplier`,
+    apiBase: `/supplier`,
 
     columns: [
       { title: "ID", field: "id", width: 70 },
