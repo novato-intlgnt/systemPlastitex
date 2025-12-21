@@ -6,7 +6,6 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 load_dotenv()
 
-DATABASE_URL: str
 raw_url = os.getenv("DATABASE_URL")
 if raw_url:
     if raw_url.startswith("postgres://"):
