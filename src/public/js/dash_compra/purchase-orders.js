@@ -282,7 +282,7 @@ function recalculateOrderTotal() {
 
 async function loadOrders() {
   try {
-    const res = await apiRequest(`${API}/purchase-orders`);
+    const res = await apiRequest(`${API}/purchase-orders/`);
     const orders = res.data || [];
     table.replaceData(orders);
   } catch (error) {
@@ -418,7 +418,7 @@ async function submitOrder(e) {
     if (isEditing && currentEditId) {
       await apiRequest(`${API}/purchase-orders/${currentEditId}`, "PUT", payload);
     } else {
-      await apiRequest(`${API}/purchase-orders`, "POST", payload);
+      await apiRequest(`${API}/purchase-orders/`, "POST", payload);
     }
     
     await loadOrders();
