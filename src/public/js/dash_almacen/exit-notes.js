@@ -163,7 +163,7 @@ async function loadNotes() {
 }
 
 async function selectNote(note) {
-  currentNoteId = note.id;
+  currentNoteId = parseInt(note.id);
   document.getElementById("selected-exit-note-info").textContent = 
     `Nota #${note.id} - ${note.customer_name}`;
   document.getElementById("btn-add-exit-item").disabled = false;
