@@ -151,7 +151,7 @@ async function loadNotes() {
 }
 
 async function selectNote(note) {
-  currentNoteId = note.id;
+  currentNoteId = parseInt(note.id);
   document.getElementById("selected-note-info").textContent = 
     `Nota #${note.id} - ${note.supplier_name}`;
   document.getElementById("btn-add-item").disabled = false;

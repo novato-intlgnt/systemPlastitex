@@ -193,7 +193,7 @@ export class TableModule {
         res = await apiRequest(`${this.apiBase}/${id}`, "PUT", payload);
       } else {
         // Crear
-        res = await apiRequest(this.apiBase, "POST", payload);
+        res = await apiRequest(`${this.apiBase}/`, "POST", payload);
       }
 
       // Recargar datos para asegurar consistencia
